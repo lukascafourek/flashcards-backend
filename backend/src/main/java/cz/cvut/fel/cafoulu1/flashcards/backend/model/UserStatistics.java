@@ -11,7 +11,6 @@ import java.util.UUID;
 @Entity
 @Table(name = "user_statistics")
 @RequiredArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 @ToString

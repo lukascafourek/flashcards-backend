@@ -11,7 +11,6 @@ import java.util.UUID;
 @Entity
 @Table(name = "pictures")
 @RequiredArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 @ToString
