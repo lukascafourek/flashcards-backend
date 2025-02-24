@@ -13,7 +13,6 @@ import java.util.UUID;
 @Entity
 @Table(name = "card_sets")
 @RequiredArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 @ToString

@@ -12,7 +12,6 @@ import java.util.UUID;
 @Entity
 @Table(name = "tokens")
 @RequiredArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 @ToString
