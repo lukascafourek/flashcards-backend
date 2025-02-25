@@ -1,17 +1,12 @@
-package cz.cvut.fel.cafoulu1.flashcards.backend.dto;
+package cz.cvut.fel.cafoulu1.flashcards.backend.dto.create;
 
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicUserDto;
 import lombok.Value;
 
 import java.io.Serializable;
-import java.util.UUID;
 
-/**
- * DTO for {@link cz.cvut.fel.cafoulu1.flashcards.backend.model.UserStatistics}
- */
 @Value
-public class UserStatisticsDto implements Serializable {
-    UUID userId;
+public class CreateUserStatistics implements Serializable {
     BasicUserDto user;
     Integer totalSetsLearned;
     Integer totalCardsLearned;

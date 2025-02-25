@@ -1,18 +1,13 @@
-package cz.cvut.fel.cafoulu1.flashcards.backend.dto;
+package cz.cvut.fel.cafoulu1.flashcards.backend.dto.create;
 
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicUserDto;
 import lombok.Value;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
-/**
- * DTO for {@link cz.cvut.fel.cafoulu1.flashcards.backend.model.Token}
- */
 @Value
-public class TokenDto implements Serializable {
-    UUID userId;
+public class CreateToken implements Serializable {
     BasicUserDto user;
     String resetToken;
     LocalDateTime expirationDate;

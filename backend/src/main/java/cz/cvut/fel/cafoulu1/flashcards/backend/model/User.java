@@ -23,11 +23,18 @@ public class User {
     @Column(unique = true, nullable = false, name = "email")
     private String email;
 
-    @Column(nullable = false, name = "password")
+    @Column(name = "password")
     private String password;
 
     @Column(nullable = false, name = "username")
     private String username;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, name = "provider")
+    private AuthProvider provider;
+
+    @Column(name = "provider_id")
+    private String providerId;
 
     @OneToMany(mappedBy = "user")
     @ToString.Exclude

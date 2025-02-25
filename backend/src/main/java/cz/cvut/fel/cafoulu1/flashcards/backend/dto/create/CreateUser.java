@@ -1,4 +1,4 @@
-package cz.cvut.fel.cafoulu1.flashcards.backend.dto;
+package cz.cvut.fel.cafoulu1.flashcards.backend.dto.create;
 
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicCardSetDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicSetStatisticsDto;
@@ -7,15 +7,11 @@ import lombok.Value;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.UUID;
 
-/**
- * DTO for {@link cz.cvut.fel.cafoulu1.flashcards.backend.model.User}
- */
 @Value
-public class UserDto implements Serializable {
-    UUID id;
+public class CreateUser implements Serializable {
     String email;
+    String password;
     String username;
     AuthProvider provider;
     List<BasicCardSetDto> cardSets;
