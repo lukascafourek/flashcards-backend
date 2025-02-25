@@ -1,5 +1,6 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.dto;
 
+import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicCardDto;
 import lombok.Value;
 
 import java.io.Serializable;
@@ -11,6 +12,6 @@ import java.util.UUID;
 @Value
 public class PictureDto implements Serializable {
     UUID cardId;
-    CardDto card;
+    BasicCardDto card;
     byte[] picture;
 }
