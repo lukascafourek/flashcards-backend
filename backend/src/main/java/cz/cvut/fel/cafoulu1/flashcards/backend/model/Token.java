@@ -20,9 +20,10 @@ public class Token {
     @Column(name = "user_id")
     private UUID userId;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(unique = true, nullable = false, name = "user_id")
+    @ToString.Exclude
     private User user;
 
     @Column(unique = true, nullable = false, name = "reset_token")
