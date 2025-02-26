@@ -19,9 +19,10 @@ public class Picture {
     @Column(name = "card_id")
     private UUID cardId;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(nullable = false, name = "card_id")
+    @ToString.Exclude
     private Card card;
 
     @Lob

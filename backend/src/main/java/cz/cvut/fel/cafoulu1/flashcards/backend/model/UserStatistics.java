@@ -19,9 +19,10 @@ public class UserStatistics {
     @Column(name = "user_id")
     private UUID userId;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(unique = true, nullable = false, name = "user_id")
+    @ToString.Exclude
     private User user;
 
     @Column(nullable = false, name = "total_sets_learned")

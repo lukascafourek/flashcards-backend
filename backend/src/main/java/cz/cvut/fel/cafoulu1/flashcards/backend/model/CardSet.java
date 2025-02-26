@@ -36,15 +36,15 @@ public class CardSet {
     @ToString.Exclude
     private User user;
 
-    @OneToMany(mappedBy = "cardSet")
+    @OneToMany(mappedBy = "cardSet", fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<Card> cards;
 
-    @OneToMany(mappedBy = "cardSet")
+    @OneToMany(mappedBy = "cardSet", fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<SetStatistics> setStatistics;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "favorite_sets",
             joinColumns = @JoinColumn(name = "card_set_id"),
