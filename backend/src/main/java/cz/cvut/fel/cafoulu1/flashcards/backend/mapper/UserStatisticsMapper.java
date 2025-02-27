@@ -6,7 +6,7 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.dto.create.CreateUserStatistics;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.UserStatistics;
 import org.mapstruct.*;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING, uses = {UserMapper.class})
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface UserStatisticsMapper {
     UserStatistics toEntity(UserStatisticsDto userStatisticsDto);
 
@@ -20,4 +20,7 @@ public interface UserStatisticsMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     UserStatistics partialUpdate(UserStatisticsDto userStatisticsDto, @MappingTarget UserStatistics userStatistics);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    UserStatistics partialUpdateBasic(BasicUserStatisticsDto basicUserStatisticsDto, @MappingTarget UserStatistics userStatistics);
 }

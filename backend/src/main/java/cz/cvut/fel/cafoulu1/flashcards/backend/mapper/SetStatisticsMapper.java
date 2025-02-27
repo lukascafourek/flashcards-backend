@@ -6,7 +6,7 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.dto.create.CreateSetStatistics;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.SetStatistics;
 import org.mapstruct.*;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING, uses = {UserMapper.class, CardSetMapper.class})
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface SetStatisticsMapper {
     SetStatistics toEntity(SetStatisticsDto setStatisticsDto);
 
@@ -20,4 +20,7 @@ public interface SetStatisticsMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     SetStatistics partialUpdate(SetStatisticsDto setStatisticsDto, @MappingTarget SetStatistics setStatistics);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    SetStatistics partialUpdateBasic(BasicSetStatisticsDto basicSetStatisticsDto, @MappingTarget SetStatistics setStatistics);
 }

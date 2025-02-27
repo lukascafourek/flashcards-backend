@@ -25,7 +25,6 @@ public class User {
     private String email;
 
     @Column(name = "password")
-    @JsonIgnore
     private String password;
 
     @Column(nullable = false, name = "username")
@@ -46,7 +45,7 @@ public class User {
     @ToString.Exclude
     private List<SetStatistics> setStatistics;
 
-    @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "favoriteUsers", fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<CardSet> favoriteSets;
 }
