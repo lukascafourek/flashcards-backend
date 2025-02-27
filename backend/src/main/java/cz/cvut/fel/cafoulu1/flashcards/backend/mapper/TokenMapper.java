@@ -6,7 +6,7 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.dto.create.CreateToken;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.Token;
 import org.mapstruct.*;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING, uses = {UserMapper.class})
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface TokenMapper {
     Token toEntity(TokenDto tokenDto);
 
@@ -20,4 +20,7 @@ public interface TokenMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Token partialUpdate(TokenDto tokenDto, @MappingTarget Token token);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Token partialUpdateBasic(BasicTokenDto basicTokenDto, @MappingTarget Token token);
 }

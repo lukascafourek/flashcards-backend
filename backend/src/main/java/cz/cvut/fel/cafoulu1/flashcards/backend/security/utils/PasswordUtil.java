@@ -1,4 +1,4 @@
-package cz.cvut.fel.cafoulu1.flashcards.backend.utils;
+package cz.cvut.fel.cafoulu1.flashcards.backend.security.utils;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 

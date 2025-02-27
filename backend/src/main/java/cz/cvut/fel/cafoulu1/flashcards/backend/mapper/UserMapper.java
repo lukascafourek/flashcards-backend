@@ -6,7 +6,7 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.dto.create.CreateUser;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.User;
 import org.mapstruct.*;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING, uses = {SetStatisticsMapper.class, CardSetMapper.class})
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface UserMapper {
     User toEntity(UserDto userDto);
 
@@ -36,4 +36,7 @@ public interface UserMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     User partialUpdate(UserDto userDto, @MappingTarget User user);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    User partialUpdateBasic(BasicUserDto basicUserDto, @MappingTarget User user);
 }

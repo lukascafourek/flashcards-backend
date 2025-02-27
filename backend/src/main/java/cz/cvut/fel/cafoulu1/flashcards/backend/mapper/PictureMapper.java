@@ -6,7 +6,7 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.dto.create.CreatePicture;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.Picture;
 import org.mapstruct.*;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING, uses = {CardMapper.class})
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface PictureMapper {
     Picture toEntity(PictureDto pictureDto);
 
@@ -20,4 +20,7 @@ public interface PictureMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Picture partialUpdate(PictureDto pictureDto, @MappingTarget Picture picture);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Picture partialUpdateBasic(BasicPictureDto basicPictureDto, @MappingTarget Picture picture);
 }

@@ -1,5 +1,6 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.utils;
 
+import cz.cvut.fel.cafoulu1.flashcards.backend.security.utils.PasswordUtil;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
