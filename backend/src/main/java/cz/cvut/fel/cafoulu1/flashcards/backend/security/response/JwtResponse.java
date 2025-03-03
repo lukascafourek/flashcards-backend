@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * This code was taken from <a href="https://github.com/eugenp/tutorials/blob/master/spring-security-modules/spring-security-core/src/main/java/com/baeldung/jwtsignkey/response/JwtResponse.java">baeldung GitHub</a>
+ * This code was taken from <a href="https://github.com/eugenp/tutorials/blob/master/spring-security-modules/spring-security-core/src/main/java/com/baeldung/jwtsignkey/response/JwtResponse.java">eugenp GitHub user</a>
  * and modified for the purpose of this application.
  */
 @Getter
@@ -12,7 +12,6 @@ import lombok.Setter;
 public class JwtResponse {
     private String token;
     private String type = "Bearer";
-
     private String email;
 
     public JwtResponse(String accessToken, String email) {

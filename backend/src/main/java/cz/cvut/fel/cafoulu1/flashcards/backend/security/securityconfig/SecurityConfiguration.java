@@ -2,6 +2,7 @@ package cz.cvut.fel.cafoulu1.flashcards.backend.security.securityconfig;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
+import cz.cvut.fel.cafoulu1.flashcards.backend.service.userdetails.UserDetailsServiceImpl;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +14,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -29,7 +29,7 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.security.jwtconfig.AuthEntryPoint
 import cz.cvut.fel.cafoulu1.flashcards.backend.security.jwtconfig.AuthTokenFilter;
 
 /**
- * This code was taken from <a href="https://github.com/eugenp/tutorials/blob/master/spring-security-modules/spring-security-core/src/main/java/com/baeldung/jwtsignkey/securityconfig/SecurityConfiguration.java">baeldung GitHub</a>
+ * This code was taken from <a href="https://github.com/eugenp/tutorials/blob/master/spring-security-modules/spring-security-core/src/main/java/com/baeldung/jwtsignkey/securityconfig/SecurityConfiguration.java">eugenp GitHub user</a>
  * and modified for the purpose of this application.
  */
 @Configuration
@@ -37,19 +37,22 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.security.jwtconfig.AuthTokenFilte
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfiguration {
-    private UserDetailsService userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
 
-    private AuthEntryPointJwt unauthorizedHandler;
+    private final AuthEntryPointJwt unauthorizedHandler;
 
-    private OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService;
+//    private OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService;
+//
+//    private AuthenticationSuccessHandler authenticationSuccessHandler;
+//
+//    private AuthenticationFailureHandler authenticationFailureHandler;
 
-    private AuthenticationSuccessHandler authenticationSuccessHandler;
+    private static final String[] WHITE_LIST_URL = {"/auth/login", "/auth/register", "/test"};
 
-    private AuthenticationFailureHandler authenticationFailureHandler;
-
-    private AuthTokenFilter authenticationJwtTokenFilter;
-
-    private static final String[] WHITE_LIST_URL = {"/auth/login", "/auth/register", "/home", "/contact", "/about-app", "/auth/reset-password", "/"};
+    @Bean
+    public AuthTokenFilter authenticationJwtTokenFilter() {
+        return new AuthTokenFilter();
+    }
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
@@ -77,26 +80,25 @@ public class SecurityConfiguration {
                         .permitAll()
                         .anyRequest()
                         .authenticated())
-                .addFilterBefore(authenticationJwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
                 .userDetailsService(userDetailsService)
                 .authenticationProvider(authenticationProvider())
                 .formLogin(form -> form
                         .loginProcessingUrl("/auth/login")
-                        .successHandler(authenticationSuccessHandler)
-                        .failureHandler(authenticationFailureHandler)
+//                        .successHandler(authenticationSuccessHandler)
+//                        .failureHandler(authenticationFailureHandler)
                 )
-                .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
-                        .successHandler(authenticationSuccessHandler)
-                        .failureHandler(authenticationFailureHandler)
-                )
+//                .oauth2Login(oauth2 -> oauth2
+//                        .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
+//                        .successHandler(authenticationSuccessHandler)
+//                        .failureHandler(authenticationFailureHandler)
+//                )
                 .logout(logout -> logout
                         .logoutSuccessUrl("/home")
                         .logoutSuccessHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_OK))
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID"))
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(unauthorizedHandler));
-
         return http.build();
     }
 }
