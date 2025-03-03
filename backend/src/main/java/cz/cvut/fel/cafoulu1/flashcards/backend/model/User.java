@@ -1,6 +1,5 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 

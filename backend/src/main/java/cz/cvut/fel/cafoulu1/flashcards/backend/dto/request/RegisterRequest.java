@@ -1,4 +1,4 @@
-package cz.cvut.fel.cafoulu1.flashcards.backend.security.request;
+package cz.cvut.fel.cafoulu1.flashcards.backend.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;
