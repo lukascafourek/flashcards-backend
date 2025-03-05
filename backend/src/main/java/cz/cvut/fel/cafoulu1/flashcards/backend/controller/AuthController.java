@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 
+/**
+ * This is a controller for handling authentication requests.
+ */
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -81,5 +84,17 @@ public class AuthController {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         userService.deleteUser(userDetails.getId());
         return ResponseEntity.ok("Account deleted successfully.");
+    }
+
+    @GetMapping("/email-exists")
+    public ResponseEntity<Boolean> emailExists(@RequestParam String email) {
+        return ResponseEntity.ok(userService.existsByEmail(email));
+    }
+
+    @GetMapping("/check-password")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Boolean> checkPassword(@RequestParam String password, Authentication authentication) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        return ResponseEntity.ok(userService.checkPassword(userDetails.getId(), password));
     }
 }

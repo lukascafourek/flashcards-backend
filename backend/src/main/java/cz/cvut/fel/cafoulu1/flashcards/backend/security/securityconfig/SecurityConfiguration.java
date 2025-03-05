@@ -47,7 +47,7 @@ public class SecurityConfiguration {
 //
 //    private AuthenticationFailureHandler authenticationFailureHandler;
 
-    private static final String[] WHITE_LIST_URL = {"/auth/login", "/auth/register", "/test"};
+    private static final String[] WHITE_LIST_URL = {"/auth/**", "/test"};
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -81,10 +81,10 @@ public class SecurityConfiguration {
                         .anyRequest()
                         .authenticated())
                 .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
-                .userDetailsService(userDetailsService)
+//                .userDetailsService(userDetailsService)
                 .authenticationProvider(authenticationProvider())
                 .formLogin(form -> form
-                        .loginProcessingUrl("/auth/login")
+                        .loginProcessingUrl("/login")
 //                        .successHandler(authenticationSuccessHandler)
 //                        .failureHandler(authenticationFailureHandler)
                 )
@@ -94,6 +94,7 @@ public class SecurityConfiguration {
 //                        .failureHandler(authenticationFailureHandler)
 //                )
                 .logout(logout -> logout
+                        .logoutUrl("/home")
                         .logoutSuccessUrl("/home")
                         .logoutSuccessHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_OK))
                         .invalidateHttpSession(true)

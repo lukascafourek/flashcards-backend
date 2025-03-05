@@ -16,7 +16,8 @@ import java.util.UUID;
 @ToString
 public class SetStatistics {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "UUID")
+    @Column(updatable = false, nullable = false)
     private UUID id;
 
     @Column(nullable = false, name = "sets_learned")

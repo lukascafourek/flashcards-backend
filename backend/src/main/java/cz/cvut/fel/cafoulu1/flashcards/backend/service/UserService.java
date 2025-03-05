@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+/**
+ * This is a service for handling user requests.
+ */
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -64,5 +67,15 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         return userMapper.toDtoBasic(user);
+    }
+
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    public boolean checkPassword(UUID userId, String password) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return passwordEncoder.matches(password, user.getPassword());
     }
 }
