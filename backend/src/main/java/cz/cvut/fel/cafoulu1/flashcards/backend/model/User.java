@@ -2,6 +2,7 @@ package cz.cvut.fel.cafoulu1.flashcards.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,7 +18,8 @@ import java.util.UUID;
 @ToString
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "UUID")
+    @Column(updatable = false, nullable = false)
     private UUID id;
 
     @Column(unique = true, nullable = false, name = "email")
