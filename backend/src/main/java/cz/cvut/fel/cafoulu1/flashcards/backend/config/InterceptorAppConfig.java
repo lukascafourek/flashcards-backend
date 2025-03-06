@@ -18,9 +18,8 @@ public class InterceptorAppConfig implements WebMvcConfigurer {
         this.loggerInterceptor = loggerInterceptor;
     }
 
-    // add rest api entity path patterns later
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(loggerInterceptor).addPathPatterns();
+        registry.addInterceptor(loggerInterceptor).addPathPatterns("/**");
     }
 }

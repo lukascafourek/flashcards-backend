@@ -38,7 +38,11 @@ public class UserServiceTest {
 
     @Test
     void registerUser_shouldThrowExceptionWhenEmailIsInUse() {
-        RegisterRequest request = new RegisterRequest("test@example.com", "testuser", "password");
+        RegisterRequest request = new RegisterRequest();
+        request.setEmail("test@example.com");
+        request.setPassword("password");
+        request.setUsername("testuser");
+
         when(userRepository.existsByEmail(request.getEmail())).thenReturn(true);
 
         assertThrows(IllegalArgumentException.class, () -> userService.registerUser(request));
@@ -46,7 +50,10 @@ public class UserServiceTest {
 
     @Test
     void registerUser_shouldReturnBasicUserDtoWhenSuccessful() {
-        RegisterRequest request = new RegisterRequest("test@example.com", "testuser", "password");
+        RegisterRequest request = new RegisterRequest();
+        request.setEmail("test@example.com");
+        request.setPassword("password");
+        request.setUsername("testuser");
 
         User user = new User();
         user.setEmail(request.getEmail());
@@ -172,5 +179,57 @@ public class UserServiceTest {
         BasicUserDto result = userService.findById(userId);
 
         assertNotNull(result);
+    }
+
+    @Test
+    void existsByEmail_shouldReturnTrueWhenEmailExists() {
+        String email = "test@example.com";
+        when(userRepository.existsByEmail(email)).thenReturn(true);
+
+        assertTrue(userService.existsByEmail(email));
+    }
+
+    @Test
+    void existsByEmail_shouldReturnFalseWhenEmailDoesNotExist() {
+        String email = "nonexistent@example.com";
+        when(userRepository.existsByEmail(email)).thenReturn(false);
+
+        assertFalse(userService.existsByEmail(email));
+    }
+
+    @Test
+    void checkPassword_shouldReturnTrueWhenPasswordMatches() {
+        UUID userId = UUID.randomUUID();
+        String password = "password";
+        User user = new User();
+        user.setPassword("encodedPassword");
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(password, user.getPassword())).thenReturn(true);
+
+        assertTrue(userService.checkPassword(userId, password));
+    }
+
+    @Test
+    void checkPassword_shouldReturnFalseWhenPasswordDoesNotMatch() {
+        UUID userId = UUID.randomUUID();
+        String password = "wrongPassword";
+        User user = new User();
+        user.setPassword("encodedPassword");
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(password, user.getPassword())).thenReturn(false);
+
+        assertFalse(userService.checkPassword(userId, password));
+    }
+
+    @Test
+    void checkPassword_shouldThrowExceptionWhenUserNotFound() {
+        UUID userId = UUID.randomUUID();
+        String password = "password";
+
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> userService.checkPassword(userId, password));
     }
 }
