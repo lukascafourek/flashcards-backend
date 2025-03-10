@@ -20,7 +20,6 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
@@ -41,11 +40,9 @@ public class SecurityConfiguration {
 
     private final AuthEntryPointJwt unauthorizedHandler;
 
-//    private OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService;
-//
-//    private AuthenticationSuccessHandler authenticationSuccessHandler;
-//
-//    private AuthenticationFailureHandler authenticationFailureHandler;
+    private final OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService;
+
+    private final AuthenticationSuccessHandler oAuth2SuccessHandler;
 
     private static final String[] WHITE_LIST_URL = {"/auth/**", "/test"};
 
@@ -73,7 +70,8 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
+        http
+                .csrf(AbstractHttpConfigurer::disable)
 //                .cors(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authorizeHttpRequests(req -> req.requestMatchers(WHITE_LIST_URL)
@@ -88,13 +86,12 @@ public class SecurityConfiguration {
 //                        .successHandler(authenticationSuccessHandler)
 //                        .failureHandler(authenticationFailureHandler)
                 )
-//                .oauth2Login(oauth2 -> oauth2
-//                        .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
-//                        .successHandler(authenticationSuccessHandler)
-//                        .failureHandler(authenticationFailureHandler)
-//                )
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
+                        .successHandler(oAuth2SuccessHandler)
+                )
                 .logout(logout -> logout
-                        .logoutUrl("/home")
+//                        .logoutUrl("/home")
                         .logoutSuccessUrl("/home")
                         .logoutSuccessHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_OK))
                         .invalidateHttpSession(true)

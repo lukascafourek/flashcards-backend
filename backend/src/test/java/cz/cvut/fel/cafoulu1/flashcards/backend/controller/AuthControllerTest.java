@@ -208,9 +208,8 @@ public class AuthControllerTest {
     @Test
     void logoutUser_shouldReturnSuccessMessageWhenUserLoggedOut() {
         HttpServletResponse response = mock(HttpServletResponse.class);
-        Authentication authentication = mock(Authentication.class);
 
-        ResponseEntity<?> result = authController.logoutUser(response, authentication);
+        ResponseEntity<?> result = authController.logoutUser(response);
 
         assertEquals(ResponseEntity.ok("User logged out successfully."), result);
         verify(response).addHeader(eq(HttpHeaders.SET_COOKIE), anyString());
@@ -219,9 +218,8 @@ public class AuthControllerTest {
     @Test
     void logoutUser_shouldSetJwtCookieToExpireImmediately() {
         HttpServletResponse response = mock(HttpServletResponse.class);
-        Authentication authentication = mock(Authentication.class);
 
-        authController.logoutUser(response, authentication);
+        authController.logoutUser(response);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(response).addHeader(eq(HttpHeaders.SET_COOKIE), captor.capture());

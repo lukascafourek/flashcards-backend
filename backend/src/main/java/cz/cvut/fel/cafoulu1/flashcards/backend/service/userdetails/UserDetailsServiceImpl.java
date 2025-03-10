@@ -1,5 +1,6 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.service.userdetails;
 
+import cz.cvut.fel.cafoulu1.flashcards.backend.model.AuthProvider;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.User;
 import cz.cvut.fel.cafoulu1.flashcards.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email: " + username));
+        if (!user.getProvider().equals(AuthProvider.LOCAL)) {
+            user.setProvider(AuthProvider.LOCAL);
+            userRepository.save(user);
+        }
         return UserDetailsImpl.build(user);
     }
 }
