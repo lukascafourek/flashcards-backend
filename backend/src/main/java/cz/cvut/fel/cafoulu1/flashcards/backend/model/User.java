@@ -2,7 +2,6 @@ package cz.cvut.fel.cafoulu1.flashcards.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
 import java.util.UUID;
@@ -34,9 +33,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "provider")
     private AuthProvider provider;
-
-    @Column(name = "provider_id")
-    private String providerId;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @ToString.Exclude

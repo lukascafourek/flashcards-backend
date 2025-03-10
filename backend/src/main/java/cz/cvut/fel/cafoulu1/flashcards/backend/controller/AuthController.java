@@ -120,8 +120,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> logoutUser(HttpServletResponse response, Authentication authentication) {
+    public ResponseEntity<?> logoutUser(HttpServletResponse response) {
         ResponseCookie jwtCookie = ResponseCookie.from("jwt", "")
                 .httpOnly(true)
                 .secure(false)  // Nastav na true, pokud používáš HTTPS
