@@ -5,7 +5,7 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.LoginRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.RegisterRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.AuthProvider;
 import cz.cvut.fel.cafoulu1.flashcards.backend.security.jwtconfig.JwtUtils;
-import cz.cvut.fel.cafoulu1.flashcards.backend.service.UserService;
+import cz.cvut.fel.cafoulu1.flashcards.backend.service.UserServiceImpl;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.userdetails.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.*;
 public class AuthControllerTest {
 
     @Mock
-    private UserService userService;
+    private UserServiceImpl userService;
 
     @Mock
     private AuthenticationManager authenticationManager;
@@ -226,5 +226,31 @@ public class AuthControllerTest {
         String cookie = captor.getValue();
         assertTrue(cookie.contains("jwt="));
         assertTrue(cookie.contains("Max-Age=0"));
+    }
+
+    @Test
+    void resetPassword_shouldReturnSuccessMessageWhenPasswordResetSuccessfully() {
+        String email = "test@example.com";
+        String password = "newpassword";
+        BasicUserDto userDto = new BasicUserDto(UUID.randomUUID(), email, "testuser", AuthProvider.LOCAL);
+
+        when(userService.findByEmail(email)).thenReturn(userDto);
+
+        ResponseEntity<?> response = authController.resetPassword(email, password);
+
+        assertEquals(ResponseEntity.ok("Password reset successfully."), response);
+        verify(userService).updatePassword(userDto.getId(), password);
+    }
+
+    @Test
+    void resetPassword_shouldReturnBadRequestWhenUserNotFound() {
+        String email = "nonexistent@example.com";
+        String password = "newpassword";
+
+        when(userService.findByEmail(email)).thenThrow(new IllegalArgumentException("User not found"));
+
+        ResponseEntity<?> response = authController.resetPassword(email, password);
+
+        assertEquals(ResponseEntity.badRequest().body("User not found"), response);
     }
 }
