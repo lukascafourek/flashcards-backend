@@ -6,6 +6,7 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.mapper.UserMapper;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.AuthProvider;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.User;
 import cz.cvut.fel.cafoulu1.flashcards.backend.repository.UserRepository;
+import cz.cvut.fel.cafoulu1.flashcards.backend.service.emails.RegistrationEmailImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -29,8 +30,11 @@ public class UserServiceTest {
     @Mock
     private UserMapper userMapper;
 
+    @Mock
+    private RegistrationEmailImpl registrationEmail;
+
     @InjectMocks
-    private UserService userService;
+    private UserServiceImpl userService;
 
     public UserServiceTest() {
         MockitoAnnotations.openMocks(this);
@@ -231,5 +235,28 @@ public class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class, () -> userService.checkPassword(userId, password));
+    }
+
+    @Test
+    void findByEmail_shouldReturnBasicUserDtoWhenEmailExists() {
+        String email = "test@example.com";
+        User user = new User();
+        user.setEmail(email);
+
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        when(userMapper.toDtoBasic(user)).thenReturn(new BasicUserDto(UUID.randomUUID(), email, "testuser", AuthProvider.LOCAL));
+
+        BasicUserDto result = userService.findByEmail(email);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    void findByEmail_shouldThrowExceptionWhenEmailDoesNotExist() {
+        String email = "nonexistent@example.com";
+
+        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> userService.findByEmail(email));
     }
 }
