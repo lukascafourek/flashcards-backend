@@ -25,27 +25,27 @@ public class UserStatistics {
     @ToString.Exclude
     private User user;
 
-    @Column(nullable = false, name = "total_sets_learned")
+    @Column(nullable = false, name = "total_sets_learned", columnDefinition = "integer default 0")
     private Integer totalSetsLearned;
 
-    @Column(nullable = false, name = "total_cards_learned")
+    @Column(nullable = false, name = "total_cards_learned", columnDefinition = "integer default 0")
     private Integer totalCardsLearned;
 
-    @Column(nullable = false, name = "total_cards_to_learn_again")
+    @Column(nullable = false, name = "total_cards_to_learn_again", columnDefinition = "integer default 0")
     private Integer totalCardsToLearnAgain;
 
-    @Column(nullable = false, name = "sets_created")
+    @Column(nullable = false, name = "sets_created", columnDefinition = "integer default 0")
     private Integer setsCreated;
 
-    @Column(nullable = false, name = "cards_created")
+    @Column(nullable = false, name = "cards_created", columnDefinition = "integer default 0")
     private Integer cardsCreated;
 
-    @Column(nullable = false, name = "base_method_modes")
+    @Column(nullable = false, name = "base_method_modes", columnDefinition = "integer default 0")
     private Integer baseMethodModes;
 
-    @Column(nullable = false, name = "multiple_choice_modes")
+    @Column(nullable = false, name = "multiple_choice_modes", columnDefinition = "integer default 0")
     private Integer multipleChoiceModes;
 
-    @Column(nullable = false, name = "connection_modes")
+    @Column(nullable = false, name = "connection_modes", columnDefinition = "integer default 0")
     private Integer connectionModes;
 }

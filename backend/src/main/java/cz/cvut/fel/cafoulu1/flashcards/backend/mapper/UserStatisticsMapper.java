@@ -23,4 +23,19 @@ public interface UserStatisticsMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     UserStatistics partialUpdateBasic(BasicUserStatisticsDto basicUserStatisticsDto, @MappingTarget UserStatistics userStatistics);
+
+    @Named("getWantedStatistic")
+    default Integer getWantedUserStatistic(UserStatistics userStatistics, String wantedStatistic) {
+        return switch (wantedStatistic.toLowerCase()) {
+            case "totalsetslearned" -> userStatistics.getTotalSetsLearned();
+            case "totalcardslearned" -> userStatistics.getTotalCardsLearned();
+            case "totalcardstolearnagain" -> userStatistics.getTotalCardsToLearnAgain();
+            case "setscreated" -> userStatistics.getSetsCreated();
+            case "cardscreated" -> userStatistics.getCardsCreated();
+            case "basemethodmodes" -> userStatistics.getBaseMethodModes();
+            case "multiplechoicemodes" -> userStatistics.getMultipleChoiceModes();
+            case "connectionmodes" -> userStatistics.getConnectionModes();
+            default -> throw new IllegalArgumentException("Invalid statistic: " + wantedStatistic);
+        };
+    }
 }

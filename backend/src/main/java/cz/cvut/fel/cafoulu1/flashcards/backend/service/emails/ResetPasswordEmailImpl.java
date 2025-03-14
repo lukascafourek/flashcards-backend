@@ -1,6 +1,5 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.service.emails;
 
-import cz.cvut.fel.cafoulu1.flashcards.backend.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
-public class ResetPasswordEmailImpl implements ResetPasswordEmail {
+public class ResetPasswordEmailImpl implements EmailService {
     private final JavaMailSender mailSender;
 
     @Value("${spring.mail.username}")
@@ -23,10 +22,10 @@ public class ResetPasswordEmailImpl implements ResetPasswordEmail {
     private static final String SUPPORT_EMAIL_2 = "lukascafourek2002@gmail.com";
 
     @Override
-    public String sendEmail(String token, User user) {
+    public void sendEmail(String token, String email) {
         String subject = "Password reset - Flashcards Web Learning App";
         String message = """
-                Hello %s,
+                Hello,
                \s
                 We have received a request to reset your account password for Flashcards Web Learning App.
                 If you did not submit this request, please ignore this email.
@@ -42,13 +41,12 @@ public class ResetPasswordEmailImpl implements ResetPasswordEmail {
                \s
                 Thank you,
                 Flashcards Web Learning App Team
-               \s""".formatted(user.getUsername(), token, SUPPORT_EMAIL_1, SUPPORT_EMAIL_2);
+               \s""".formatted(token, SUPPORT_EMAIL_1, SUPPORT_EMAIL_2);
         SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(user.getEmail());
+        mailMessage.setTo(email);
         mailMessage.setSubject(subject);
         mailMessage.setText(message);
         mailMessage.setFrom(sender);
         mailSender.send(mailMessage);
-        return "Reset Password email sent successfully";
     }
 }

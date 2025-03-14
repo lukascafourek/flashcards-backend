@@ -3,11 +3,12 @@ package cz.cvut.fel.cafoulu1.flashcards.backend.controller;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicUserDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.LoginRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.RegisterRequest;
+import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.UpdateUserRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.security.jwtconfig.JwtUtils;
 //import cz.cvut.fel.cafoulu1.flashcards.backend.security.response.JwtResponse;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.UserServiceImpl;
+import cz.cvut.fel.cafoulu1.flashcards.backend.service.emails.EmailServiceImpl;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.userdetails.UserDetailsImpl;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -20,7 +21,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.UnsupportedEncodingException;
 import java.time.Duration;
 
 /**
@@ -32,22 +32,27 @@ import java.time.Duration;
 public class AuthController {
     private final UserServiceImpl userService;
 
+    private final EmailServiceImpl registrationEmail;
+
     private final AuthenticationManager authenticationManager;
 
     private final JwtUtils jwtUtils;
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest, HttpServletRequest request) throws UnsupportedEncodingException {
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
         try {
-            BasicUserDto user = userService.registerUser(registerRequest);
-            return ResponseEntity.ok(user);
+            userService.registerUser(registerRequest);
+            String email = registerRequest.getEmail();
+            String username = registerRequest.getUsername();
+            registrationEmail.sendEmail(email, username);
+            return ResponseEntity.ok("User registered successfully.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest, HttpServletResponse response) throws UnsupportedEncodingException {
+    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -75,41 +80,53 @@ public class AuthController {
         return ResponseEntity.ok(userService.findById(userDetails.getId()));
     }
 
-    @PutMapping("/update-email")
+    @PatchMapping("/update-user")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<String> updateEmail(@RequestParam String email, Authentication authentication) {
+    public ResponseEntity<String> updateUser(@RequestBody UpdateUserRequest updateUserRequest, Authentication authentication) {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            userService.updateEmail(userDetails.getId(), email);
-            return ResponseEntity.ok("Email updated successfully.");
+            userService.updateUser(userDetails.getUsername(), updateUserRequest);
+            return ResponseEntity.ok("User updated successfully.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @PutMapping("/update-username")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<String> updateUsername(@RequestParam String username, Authentication authentication) {
-        try {
-            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            userService.updateUsername(userDetails.getId(), username);
-            return ResponseEntity.ok("Username updated successfully.");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    @PutMapping("/update-password")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<String> updatePassword(@RequestParam String password, Authentication authentication) {
-        try {
-            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            userService.updatePassword(userDetails.getId(), password);
-            return ResponseEntity.ok("Password updated successfully.");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
+//    @PutMapping("/update-email")
+//    @PreAuthorize("isAuthenticated()")
+//    public ResponseEntity<String> updateEmail(@RequestParam String email, Authentication authentication) {
+//        try {
+//            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+//            userService.updateEmail(userDetails.getId(), email);
+//            return ResponseEntity.ok("Email updated successfully.");
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
+//
+//    @PutMapping("/update-username")
+//    @PreAuthorize("isAuthenticated()")
+//    public ResponseEntity<String> updateUsername(@RequestParam String username, Authentication authentication) {
+//        try {
+//            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+//            userService.updateUsername(userDetails.getId(), username);
+//            return ResponseEntity.ok("Username updated successfully.");
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
+//
+//    @PutMapping("/update-password")
+//    @PreAuthorize("isAuthenticated()")
+//    public ResponseEntity<String> updatePassword(@RequestParam String password, Authentication authentication) {
+//        try {
+//            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+//            userService.updatePassword(userDetails.getId(), password);
+//            return ResponseEntity.ok("Password updated successfully.");
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
 
     @DeleteMapping("/delete-account")
     @PreAuthorize("isAuthenticated()")
@@ -163,8 +180,9 @@ public class AuthController {
     @PutMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestParam String email, @RequestParam String password) {
         try {
-            BasicUserDto user = userService.findByEmail(email);
-            userService.updatePassword(user.getId(), password);
+            UpdateUserRequest updateUserRequest = new UpdateUserRequest();
+            updateUserRequest.setPassword(password);
+            userService.updateUser(email, updateUserRequest);
             return ResponseEntity.ok("Password reset successfully.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

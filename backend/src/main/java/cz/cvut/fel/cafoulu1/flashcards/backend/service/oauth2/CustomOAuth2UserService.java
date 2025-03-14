@@ -3,8 +3,9 @@ package cz.cvut.fel.cafoulu1.flashcards.backend.service.oauth2;
 import cz.cvut.fel.cafoulu1.flashcards.backend.mapper.UserMapper;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.AuthProvider;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.User;
+import cz.cvut.fel.cafoulu1.flashcards.backend.model.builder.UserBuilder;
 import cz.cvut.fel.cafoulu1.flashcards.backend.repository.UserRepository;
-import cz.cvut.fel.cafoulu1.flashcards.backend.service.emails.RegistrationEmailImpl;
+import cz.cvut.fel.cafoulu1.flashcards.backend.service.emails.EmailServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -22,7 +23,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserMapper userMapper;
 
-    private final RegistrationEmailImpl registrationEmail;
+    private final EmailServiceImpl registrationEmail;
+
+    private final UserBuilder userBuilder = new UserBuilder();
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -39,11 +42,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private User registerNewUser(String email, String name) {
-        User newUser = new User();
-        newUser.setEmail(email);
-        newUser.setUsername(name);
-        newUser.setProvider(AuthProvider.GOOGLE);
-        registrationEmail.sendEmail(newUser);
-        return userRepository.save(newUser);
+        User user = userBuilder
+                .setEmail(email)
+                .setUsername(name)
+                .setProvider(AuthProvider.GOOGLE)
+                .build();
+        User savedUser = userRepository.save(user);
+        registrationEmail.sendEmail(email, name);
+        return savedUser;
     }
 }

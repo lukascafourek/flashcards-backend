@@ -1,6 +1,5 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.service.emails;
 
-import cz.cvut.fel.cafoulu1.flashcards.backend.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
-public class RegistrationEmailImpl implements RegistrationEmail {
+public class EmailServiceImpl implements EmailService {
     private final JavaMailSender mailSender;
 
     @Value("${spring.mail.username}")
@@ -23,7 +22,7 @@ public class RegistrationEmailImpl implements RegistrationEmail {
     private static final String SUPPORT_EMAIL_2 = "lukascafourek2002@gmail.com";
 
     @Override
-    public void sendEmail(User user) {
+    public void sendEmail(String email, String username) {
         String subject = "Welcome to Flashcards Web Learning App";
         String message = """
                 Hello %s,
@@ -45,9 +44,9 @@ public class RegistrationEmailImpl implements RegistrationEmail {
                \s
                 Thank you,
                 Flashcards Web Learning App Team
-               \s""".formatted(user.getUsername(), SUPPORT_EMAIL_1, SUPPORT_EMAIL_2);
+               \s""".formatted(username, SUPPORT_EMAIL_1, SUPPORT_EMAIL_2);
         SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(user.getEmail());
+        mailMessage.setTo(email);
         mailMessage.setSubject(subject);
         mailMessage.setText(message);
         mailMessage.setFrom(sender);

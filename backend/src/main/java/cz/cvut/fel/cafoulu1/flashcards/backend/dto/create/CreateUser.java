@@ -3,12 +3,12 @@ package cz.cvut.fel.cafoulu1.flashcards.backend.dto.create;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicCardSetDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicSetStatisticsDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.AuthProvider;
-import lombok.Value;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.List;
 
-@Value
+@Data
 public class CreateUser implements Serializable {
     String email;
     String password;
