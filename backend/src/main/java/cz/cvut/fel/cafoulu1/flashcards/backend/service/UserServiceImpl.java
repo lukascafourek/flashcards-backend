@@ -46,6 +46,12 @@ public class UserServiceImpl implements UserService {
     public void updateUser(String email, UpdateUserRequest updateUserRequest) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        if (updateUserRequest.getCheck() != null && !passwordEncoder.matches(updateUserRequest.getCheck(), user.getPassword())) {
+            throw new IllegalArgumentException("Your current password is invalid.");
+        }
+        if (updateUserRequest.getEmail() != null && userRepository.existsByEmail(updateUserRequest.getEmail())) {
+            throw new IllegalArgumentException("Email is already in use.");
+        }
         User updatedUser = userMapper.partialUpdateUser(updateUserRequest, user);
         userRepository.save(updatedUser);
     }
@@ -97,15 +103,15 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDtoBasic(user);
     }
 
-    @Override
-    public boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email);
-    }
-
-    @Override
-    public boolean checkPassword(UUID userId, String password) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        return passwordEncoder.matches(password, user.getPassword());
-    }
+//    @Override
+//    public boolean existsByEmail(String email) {
+//        return userRepository.existsByEmail(email);
+//    }
+//
+//    @Override
+//    public boolean checkPassword(UUID userId, String password) {
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+//        return passwordEncoder.matches(password, user.getPassword());
+//    }
 }

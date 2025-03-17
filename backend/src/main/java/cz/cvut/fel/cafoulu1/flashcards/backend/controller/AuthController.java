@@ -148,17 +148,17 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/email-exists")
-    public ResponseEntity<Boolean> emailExists(@RequestParam String email) {
-        return ResponseEntity.ok(userService.existsByEmail(email));
-    }
-
-    @GetMapping("/check-password")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Boolean> checkPassword(@RequestParam String password, Authentication authentication) {
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        return ResponseEntity.ok(userService.checkPassword(userDetails.getId(), password));
-    }
+//    @GetMapping("/email-exists")
+//    public ResponseEntity<Boolean> emailExists(@RequestParam String email) {
+//        return ResponseEntity.ok(userService.existsByEmail(email));
+//    }
+//
+//    @GetMapping("/check-password")
+//    @PreAuthorize("isAuthenticated()")
+//    public ResponseEntity<Boolean> checkPassword(@RequestParam String password, Authentication authentication) {
+//        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+//        return ResponseEntity.ok(userService.checkPassword(userDetails.getId(), password));
+//    }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logoutUser(HttpServletResponse response) {

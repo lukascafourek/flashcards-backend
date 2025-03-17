@@ -26,7 +26,7 @@ public interface UserService {
 
     BasicUserDto findById(UUID userId);
 
-    boolean existsByEmail(String email);
-
-    boolean checkPassword(UUID userId, String password);
+//    boolean existsByEmail(String email);
+//
+//    boolean checkPassword(UUID userId, String password);
 }
