@@ -9,4 +9,5 @@ import java.util.UUID;
  * Repository for cards.
  */
 public interface CardRepository extends JpaRepository<Card, UUID> {
+    void deleteByCardSetId(UUID cardSetId);
 }

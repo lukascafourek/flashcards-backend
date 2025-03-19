@@ -4,23 +4,33 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicUserDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.RegisterRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.UpdateUserRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.mapper.UserMapper;
-import cz.cvut.fel.cafoulu1.flashcards.backend.model.AuthProvider;
-import cz.cvut.fel.cafoulu1.flashcards.backend.model.User;
+import cz.cvut.fel.cafoulu1.flashcards.backend.model.*;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.builder.UserBuilder;
-import cz.cvut.fel.cafoulu1.flashcards.backend.repository.UserRepository;
+import cz.cvut.fel.cafoulu1.flashcards.backend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
 /**
- * This is a service for handling user requests.
+    * Implementation of {@link UserService}.
  */
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+
+    private final CardSetRepository cardSetRepository;
+
+    private final UserStatisticsRepository userStatisticsRepository;
+
+    private final SetStatisticsRepository setStatisticsRepository;
+
+    private final CardRepository cardRepository;
+
+    private final PictureRepository pictureRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -28,6 +38,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserBuilder userBuilder = new UserBuilder();
 
+    @Transactional
     @Override
     public void registerUser(RegisterRequest registerRequest) {
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
@@ -39,6 +50,9 @@ public class UserServiceImpl implements UserService {
                 .setUsername(registerRequest.getUsername())
                 .setProvider(AuthProvider.LOCAL)
                 .build();
+        UserStatistics userStatistics = new UserStatistics();
+        userStatistics.setUser(user);
+        userStatisticsRepository.save(userStatistics);
         userRepository.save(user);
     }
 
@@ -88,12 +102,27 @@ public class UserServiceImpl implements UserService {
 //        userRepository.save(user);
 //    }
 
+    @Transactional
     @Override
     public void deleteUser(UUID userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new IllegalArgumentException("User not found");
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        for (CardSet favoriteSet : user.getFavoriteSets()) {
+            favoriteSet.getFavoriteUsers().remove(user);
         }
-        userRepository.deleteById(userId);
+        user.getFavoriteSets().clear();
+        userRepository.save(user);
+        cardSetRepository.saveAll(user.getFavoriteSets());
+        for (CardSet cardSet : user.getCardSets()) {
+            for (Card card : cardSet.getCards()) {
+                pictureRepository.deleteById(card.getId());
+            }
+            cardRepository.deleteByCardSetId(cardSet.getId());
+        }
+        cardSetRepository.deleteByUserId(userId);
+        setStatisticsRepository.deleteByUserId(userId);
+        userStatisticsRepository.deleteById(userId);
+        userRepository.delete(user);
     }
 
     @Override

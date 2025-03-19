@@ -7,7 +7,7 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.UpdateUserRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.security.jwtconfig.JwtUtils;
 //import cz.cvut.fel.cafoulu1.flashcards.backend.security.response.JwtResponse;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.UserServiceImpl;
-import cz.cvut.fel.cafoulu1.flashcards.backend.service.emails.EmailServiceImpl;
+import cz.cvut.fel.cafoulu1.flashcards.backend.service.emails.RegistrationEmailImpl;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.userdetails.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ import java.time.Duration;
 public class AuthController {
     private final UserServiceImpl userService;
 
-    private final EmailServiceImpl registrationEmail;
+    private final RegistrationEmailImpl registrationEmail;
 
     private final AuthenticationManager authenticationManager;
 

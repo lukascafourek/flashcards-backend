@@ -13,4 +13,5 @@ public class BasicCardSetDto implements Serializable {
     String name;
     Category category;
     LocalDate creationDate;
+    String creator;
 }
