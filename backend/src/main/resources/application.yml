@@ -15,7 +15,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/flashcards  # Mac 5433, Windows 5432
     username: postgres
-    password: postgres  # vzdy nutno zmenit kvuli gitu
+    password: 1/Popokatepetl  # vzdy nutno zmenit kvuli gitu
 #  flyway:
 #    enabled: true
 #    locations: classpath:db/migration

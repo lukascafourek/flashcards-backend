@@ -2,7 +2,7 @@ package cz.cvut.fel.cafoulu1.flashcards.backend.controller;
 
 import cz.cvut.fel.cafoulu1.flashcards.backend.security.jwtconfig.JwtUtils;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.UserServiceImpl;
-import cz.cvut.fel.cafoulu1.flashcards.backend.service.emails.EmailServiceImpl;
+import cz.cvut.fel.cafoulu1.flashcards.backend.service.emails.RegistrationEmailImpl;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -20,7 +20,7 @@ public class AuthControllerTest {
     private JwtUtils jwtUtils;
 
     @Mock
-    private EmailServiceImpl registrationEmail;
+    private RegistrationEmailImpl registrationEmail;
 
     @InjectMocks
     private AuthController authController;

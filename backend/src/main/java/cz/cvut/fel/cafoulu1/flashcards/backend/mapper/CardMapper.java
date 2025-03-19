@@ -8,18 +8,18 @@ import org.mapstruct.*;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface CardMapper {
-    Card toEntity(CardDto cardDto);
+//    Card toEntity(CardDto cardDto);
 
     Card toEntityBasic(BasicCardDto cardDto);
 
-    CardDto toDto(Card card);
+//    CardDto toDto(Card card);
 
     BasicCardDto toDtoBasic(Card card);
 
     Card createCard(CreateCard createCard);
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    Card partialUpdate(CardDto cardDto, @MappingTarget Card card);
+//    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+//    Card partialUpdate(CardDto cardDto, @MappingTarget Card card);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Card partialUpdateBasic(BasicCardDto cardDto, @MappingTarget Card card);

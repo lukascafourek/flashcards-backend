@@ -3,9 +3,11 @@ package cz.cvut.fel.cafoulu1.flashcards.backend.service.oauth2;
 import cz.cvut.fel.cafoulu1.flashcards.backend.mapper.UserMapper;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.AuthProvider;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.User;
+import cz.cvut.fel.cafoulu1.flashcards.backend.model.UserStatistics;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.builder.UserBuilder;
 import cz.cvut.fel.cafoulu1.flashcards.backend.repository.UserRepository;
-import cz.cvut.fel.cafoulu1.flashcards.backend.service.emails.EmailServiceImpl;
+import cz.cvut.fel.cafoulu1.flashcards.backend.repository.UserStatisticsRepository;
+import cz.cvut.fel.cafoulu1.flashcards.backend.service.emails.RegistrationEmailImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -21,9 +23,11 @@ import org.springframework.stereotype.Service;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private final UserRepository userRepository;
 
+    private final UserStatisticsRepository userStatisticsRepository;
+
     private final UserMapper userMapper;
 
-    private final EmailServiceImpl registrationEmail;
+    private final RegistrationEmailImpl registrationEmail;
 
     private final UserBuilder userBuilder = new UserBuilder();
 
@@ -47,6 +51,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .setUsername(name)
                 .setProvider(AuthProvider.GOOGLE)
                 .build();
+        UserStatistics userStatistics = new UserStatistics();
+        userStatistics.setUser(user);
+        userStatisticsRepository.save(userStatistics);
         User savedUser = userRepository.save(user);
         registrationEmail.sendEmail(email, name);
         return savedUser;

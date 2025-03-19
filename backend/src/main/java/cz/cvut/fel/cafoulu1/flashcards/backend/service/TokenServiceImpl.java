@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.Random;
 
 /**
- * Service for handling password reset tokens and sending emails with them.
+ * Implementation of {@link TokenService}.
  */
 @Service
 @RequiredArgsConstructor

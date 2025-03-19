@@ -24,7 +24,7 @@ public class UserStatisticsController {
     public ResponseEntity<?> getUserStatistics(Authentication authentication) {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            return ResponseEntity.ok(userStatisticsService.getUserStatistics(userDetails.getId()));
+            return ResponseEntity.ok(userStatisticsService.getStatistics(userDetails.getId()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
