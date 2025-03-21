@@ -20,10 +20,10 @@ public class Card {
     @Column(updatable = false, nullable = false)
     private UUID id;
 
-    @Column(nullable = false, name = "front")
+    @Column(nullable = false, name = "front", columnDefinition = "VARCHAR(510)")
     private String front;
 
-    @Column(nullable = false, name = "back")
+    @Column(nullable = false, name = "back", columnDefinition = "VARCHAR(510)")
     private String back;
 
     @ManyToOne(fetch = FetchType.LAZY)

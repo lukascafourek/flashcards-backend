@@ -5,6 +5,7 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.dto.CardSetDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicCardSetDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.CardSetRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.FilterCardSetsRequest;
+import cz.cvut.fel.cafoulu1.flashcards.backend.dto.response.CardSetsResponse;
 import cz.cvut.fel.cafoulu1.flashcards.backend.mapper.CardMapper;
 import cz.cvut.fel.cafoulu1.flashcards.backend.mapper.CardSetMapper;
 import cz.cvut.fel.cafoulu1.flashcards.backend.mapper.PictureMapper;
@@ -115,7 +116,7 @@ public class CardSetServiceImpl implements CardSetService {
     }
 
     @Override
-    public List<BasicCardSetDto> getFilteredCardSets(Pageable pageable, FilterCardSetsRequest filterCardSetsRequest) {
+    public CardSetsResponse getFilteredCardSets(Pageable pageable, FilterCardSetsRequest filterCardSetsRequest) {
         Specification<CardSet> spec = ((root, query, criteriaBuilder) -> criteriaBuilder.conjunction());
         List<CardSetFilter> filters = List.of(
                 new SearchFilter(),
@@ -126,13 +127,19 @@ public class CardSetServiceImpl implements CardSetService {
         for (CardSetFilter filter : filters) {
             spec = filter.apply(filterCardSetsRequest, spec);
         }
-        return cardSetRepository.findAll(spec, pageable).stream()
+        List<BasicCardSetDto> cardSets = cardSetRepository.findAll(spec, pageable).stream()
                 .map(cardSet -> {
                     BasicCardSetDto basicCardSetDto = cardSetMapper.toDtoBasic(cardSet);
                     basicCardSetDto.setCreator(cardSet.getUser().getUsername());
                     return basicCardSetDto;
                 })
                 .toList();
+        CardSetsResponse response = new CardSetsResponse();
+        response.setPages((int) Math.ceil((double) cardSetRepository.findAll().size() / pageable.getPageSize()));
+        response.setSetsCountOnPage(cardSets.size());
+        response.setCategories(List.of(Category.values()));
+        response.setCardSets(cardSets);
+        return response;
     }
 
     @Transactional
