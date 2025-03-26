@@ -10,9 +10,5 @@ import java.util.UUID;
  * Repository for set statistics.
  */
 public interface SetStatisticsRepository extends JpaRepository<SetStatistics, UUID> {
-    void deleteByUserId(UUID userId);
-
-    void deleteByCardSetId(UUID cardSetId);
-
     Optional<SetStatistics> findByCardSetIdAndUserId(UUID cardSetId, UUID userId);
 }

@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 /**
- * Implementation of {@link GenericStatisticsService} for user statistics.
+ * Implementation of {@link UserStatisticsService} for user statistics.
  */
 @Service
 @RequiredArgsConstructor
-public class UserStatisticsServiceImpl implements GenericStatisticsService<BasicUserStatisticsDto> {
+public class UserStatisticsServiceImpl implements UserStatisticsService {
     private final UserStatisticsRepository userStatisticsRepository;
 
     private final UserStatisticsMapper userStatisticsMapper;
@@ -24,5 +24,13 @@ public class UserStatisticsServiceImpl implements GenericStatisticsService<Basic
         UserStatistics userStatistics = userStatisticsRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User statistics not found"));
         return userStatisticsMapper.toDtoBasic(userStatistics);
+    }
+
+    @Override
+    public void incrementWantedStatistic(UUID userId, String statistic) {
+        UserStatistics userStatistics = userStatisticsRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User statistics not found"));
+        userStatisticsMapper.incrementStatistic(userStatistics, statistic);
+        userStatisticsRepository.save(userStatistics);
     }
 }

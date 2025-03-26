@@ -8,11 +8,11 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.FilterCardSetsRequest
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.response.CardSetsResponse;
 import cz.cvut.fel.cafoulu1.flashcards.backend.mapper.CardMapper;
 import cz.cvut.fel.cafoulu1.flashcards.backend.mapper.CardSetMapper;
-import cz.cvut.fel.cafoulu1.flashcards.backend.mapper.PictureMapper;
 import cz.cvut.fel.cafoulu1.flashcards.backend.mapper.SetStatisticsMapper;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.*;
 import cz.cvut.fel.cafoulu1.flashcards.backend.repository.*;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.cor.*;
+import cz.cvut.fel.cafoulu1.flashcards.backend.service.helper.CardSetDeletionHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,13 +46,11 @@ public class CardSetServiceImpl implements CardSetService {
 
     private final CardMapper cardMapper;
 
-    private final PictureMapper pictureMapper;
-
     private final SetStatisticsMapper setStatisticsMapper;
 
     @Transactional
     @Override
-    public void createCardSet(UUID userId, CardSetRequest cardSetRequest) {
+    public UUID createCardSet(UUID userId, CardSetRequest cardSetRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         CardSet cardSet = cardSetMapper.createCardSet(cardSetRequest);
@@ -70,13 +69,17 @@ public class CardSetServiceImpl implements CardSetService {
         user.getCardSets().add(cardSet);
         user.getSetStatistics().add(setStatistics);
         userRepository.save(user);
+        return cardSet.getId();
     }
 
     @Transactional
     @Override
-    public void updateCardSet(UUID cardSetId, CardSetRequest cardSetRequest) {
+    public void updateCardSet(UUID cardSetId, CardSetRequest cardSetRequest, UUID userId) {
         CardSet cardSet = cardSetRepository.findById(cardSetId)
                 .orElseThrow(() -> new IllegalArgumentException("Card set not found"));
+        if (!cardSet.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("User is not the creator of the card set");
+        }
         CardSet updatedCardSet = cardSetMapper.partialUpdateCardSet(cardSetRequest, cardSet);
         Boolean isFavorite = cardSetRequest.getFavorite();
         if (isFavorite != null) {
@@ -94,24 +97,26 @@ public class CardSetServiceImpl implements CardSetService {
     }
 
     @Override
-    public CardSetDto getCardSet(UUID cardSetId) {
+    public CardSetDto getCardSet(UUID cardSetId, UUID userId) {
         CardSet cardSet = cardSetRepository.findById(cardSetId)
                 .orElseThrow(() -> new IllegalArgumentException("Card set not found"));
         SetStatistics setStatistics = setStatisticsRepository.findByCardSetIdAndUserId(cardSetId, cardSet.getUser().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Set statistics not found"));
         List<CardDto> cards = cardSet.getCards().stream().map(card -> {
-            CardDto cardDto = new CardDto();
-            cardDto.setCard(cardMapper.toDtoBasic(card));
-            pictureRepository.findById(card.getId()).ifPresent(picture ->
-                    cardDto.setPicture(pictureMapper.toDtoBasic(picture))
-            );
+            CardDto cardDto = cardMapper.toDto(card);
+            pictureRepository.findById(card.getId()).ifPresent(picture -> {
+                String encodedPicture = Base64.getEncoder().encodeToString(picture.getPicture());
+                cardDto.setPicture(encodedPicture);
+            });
             return cardDto;
         }).toList();
         CardSetDto dto = new CardSetDto();
         dto.setBasicCardSetDto(cardSetMapper.toDtoBasic(cardSet));
         dto.setSetStatistics(setStatisticsMapper.toDtoBasic(setStatistics));
-        dto.setCards(cards);
+        dto.setCards(List.copyOf(cards));
         dto.setFavorite(cardSet.getFavoriteUsers().contains(cardSet.getUser()));
+        dto.setCreator(cardSet.getUser().getId().equals(userId));
+        dto.setCategories(List.of(Category.values()));
         return dto;
     }
 
@@ -136,28 +141,25 @@ public class CardSetServiceImpl implements CardSetService {
                 .toList();
         CardSetsResponse response = new CardSetsResponse();
         response.setPages((int) Math.ceil((double) cardSetRepository.findAll().size() / pageable.getPageSize()));
-        response.setSetsCountOnPage(cardSets.size());
+//        response.setSetsCountOnPage(cardSets.size());
         response.setCategories(List.of(Category.values()));
-        response.setCardSets(cardSets);
+        response.setCardSets(List.copyOf(cardSets));
         return response;
     }
 
     @Transactional
     @Override
-    public void deleteCardSet(UUID cardSetId) {
+    public void deleteCardSet(UUID cardSetId, UUID userId) {
         CardSet cardSet = cardSetRepository.findById(cardSetId)
                 .orElseThrow(() -> new IllegalArgumentException("Card set not found"));
-        for (User user : cardSet.getFavoriteUsers()) {
-            user.getFavoriteSets().remove(cardSet);
+        User creator = cardSet.getUser();
+        if (!creator.getId().equals(userId)) {
+            throw new IllegalArgumentException("User is not the creator of the card set");
         }
-        cardSet.getFavoriteUsers().clear();
-        cardSetRepository.save(cardSet);
-        userRepository.saveAll(cardSet.getFavoriteUsers());
-        for (Card card : cardSet.getCards()) {
-            pictureRepository.deleteById(card.getId());
-        }
-        cardRepository.deleteByCardSetId(cardSet.getId());
-        setStatisticsRepository.deleteByCardSetId(cardSet.getId());
+        CardSetDeletionHelper.getInstance()
+                .cardSetDeleteHelper(cardSet, userRepository, setStatisticsRepository, pictureRepository, cardRepository);
+        creator.getCardSets().remove(cardSet);
+        userRepository.save(creator);
         cardSetRepository.delete(cardSet);
     }
 }

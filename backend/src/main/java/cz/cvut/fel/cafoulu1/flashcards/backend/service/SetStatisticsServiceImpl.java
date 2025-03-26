@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 /**
- * Implementation of {@link GenericStatisticsService} for set statistics.
+ * Implementation of {@link SetStatisticsService} for set statistics.
  */
 @Service
 @RequiredArgsConstructor
-public class SetStatisticsServiceImpl implements GenericStatisticsService<BasicSetStatisticsDto> {
+public class SetStatisticsServiceImpl implements SetStatisticsService {
     private final SetStatisticsRepository setStatisticsRepository;
 
     private final SetStatisticsMapper setStatisticsMapper;
@@ -24,5 +24,13 @@ public class SetStatisticsServiceImpl implements GenericStatisticsService<BasicS
         SetStatistics setStatistics = setStatisticsRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Set statistics not found"));
         return setStatisticsMapper.toDtoBasic(setStatistics);
+    }
+
+    @Override
+    public void incrementWantedStatistic(UUID cardSetId, UUID userId, String statistic) {
+        SetStatistics setStatistics = setStatisticsRepository.findByCardSetIdAndUserId(cardSetId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("Set statistics not found"));
+        setStatisticsMapper.incrementStatistic(setStatistics, statistic);
+        setStatisticsRepository.save(setStatistics);
     }
 }

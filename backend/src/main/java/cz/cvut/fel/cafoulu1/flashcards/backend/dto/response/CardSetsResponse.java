@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class CardSetsResponse {
     Integer pages;
-    Integer setsCountOnPage;
+//    Integer setsCountOnPage;
     List<Category> categories;
     List<BasicCardSetDto> cardSets;
 }

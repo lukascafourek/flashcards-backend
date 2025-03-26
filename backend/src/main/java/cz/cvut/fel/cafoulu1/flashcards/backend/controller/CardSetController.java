@@ -29,8 +29,7 @@ public class CardSetController {
     public ResponseEntity<?> createCardSet(@RequestBody CardSetRequest cardSetRequest, Authentication authentication) {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            cardSetService.createCardSet(userDetails.getId(), cardSetRequest);
-            return ResponseEntity.ok("Card set created");
+            return ResponseEntity.ok(cardSetService.createCardSet(userDetails.getId(), cardSetRequest));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -38,9 +37,10 @@ public class CardSetController {
 
     @PatchMapping("/update/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> updateCardSet(@PathVariable("id") UUID id, @RequestBody CardSetRequest cardSetRequest) {
+    public ResponseEntity<?> updateCardSet(@PathVariable("id") UUID id, @RequestBody CardSetRequest cardSetRequest, Authentication authentication) {
         try {
-            cardSetService.updateCardSet(id, cardSetRequest);
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            cardSetService.updateCardSet(id, cardSetRequest, userDetails.getId());
             return ResponseEntity.ok("Card set updated");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -49,9 +49,10 @@ public class CardSetController {
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> deleteCardSet(@PathVariable("id") UUID id) {
+    public ResponseEntity<?> deleteCardSet(@PathVariable("id") UUID id, Authentication authentication) {
         try {
-            cardSetService.deleteCardSet(id);
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            cardSetService.deleteCardSet(id, userDetails.getId());
             return ResponseEntity.ok("Card set deleted");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -60,24 +61,25 @@ public class CardSetController {
 
     @GetMapping("/get/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> getCardSet(@PathVariable("id") UUID id) {
+    public ResponseEntity<?> getCardSet(@PathVariable("id") UUID id, Authentication authentication) {
         try {
-            return ResponseEntity.ok(cardSetService.getCardSet(id));
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            return ResponseEntity.ok(cardSetService.getCardSet(id, userDetails.getId()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @GetMapping("/get-all-with-pagination")
+    @GetMapping("/get-sets")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getAllCardSetsWithPagination(
             @RequestBody FilterCardSetsRequest filterCardSetsRequest,
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "creationDate") String sortBy,
             @RequestParam(defaultValue = "desc") String order) {
         try {
-            Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy, order));
+            Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sortBy, order));
             return ResponseEntity.ok(cardSetService.getFilteredCardSets(pageable, filterCardSetsRequest));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
