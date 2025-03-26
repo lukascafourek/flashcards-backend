@@ -10,9 +10,9 @@
     </parent>
     <groupId>cz.cvut.fel.cafoulu1.flashcards</groupId>
     <artifactId>backend</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.5.0-SNAPSHOT</version>
     <name>backend</name>
-    <description>backend</description>
+    <description>flashcards-backend</description>
     <url/>
     <licenses>
         <license/>
@@ -101,6 +101,11 @@
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+            <version>2.9.2</version>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>

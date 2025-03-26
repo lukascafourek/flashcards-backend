@@ -7,11 +7,13 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.mapper.UserMapper;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.*;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.builder.UserBuilder;
 import cz.cvut.fel.cafoulu1.flashcards.backend.repository.*;
+import cz.cvut.fel.cafoulu1.flashcards.backend.service.helper.CardSetDeletionHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -56,6 +58,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     @Override
     public void updateUser(String email, UpdateUserRequest updateUserRequest) {
         User user = userRepository.findByEmail(email)
@@ -107,20 +110,22 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        for (CardSet favoriteSet : user.getFavoriteSets()) {
-            favoriteSet.getFavoriteUsers().remove(user);
-        }
-        user.getFavoriteSets().clear();
-        userRepository.save(user);
+        user.getFavoriteSets().forEach(favoriteSet -> favoriteSet.getFavoriteUsers().remove(user));
         cardSetRepository.saveAll(user.getFavoriteSets());
-        for (CardSet cardSet : user.getCardSets()) {
-            for (Card card : cardSet.getCards()) {
-                pictureRepository.deleteById(card.getId());
-            }
-            cardRepository.deleteByCardSetId(cardSet.getId());
+        user.getCardSets().forEach((cardSet) -> CardSetDeletionHelper.getInstance()
+                        .cardSetDeleteHelper(cardSet, userRepository, setStatisticsRepository, pictureRepository, cardRepository));
+        cardSetRepository.deleteAll(user.getCardSets());
+        List<CardSet> setStatisticsCardSets = user.getSetStatistics().stream()
+                .map(setStatistics -> {
+                    CardSet cardSet = setStatistics.getCardSet();
+                    cardSet.getSetStatistics().remove(setStatistics);
+                    return cardSet;
+                })
+                .toList();
+        if (!setStatisticsCardSets.isEmpty()) {
+            cardSetRepository.saveAll(setStatisticsCardSets);
+            setStatisticsRepository.deleteAll(user.getSetStatistics());
         }
-        cardSetRepository.deleteByUserId(userId);
-        setStatisticsRepository.deleteByUserId(userId);
         userStatisticsRepository.deleteById(userId);
         userRepository.delete(user);
     }

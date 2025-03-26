@@ -12,7 +12,5 @@ import java.util.UUID;
  * Repository for card sets.
  */
 public interface CardSetRepository extends JpaRepository<CardSet, UUID> {
-    void deleteByUserId(UUID userId);
-
     Page<CardSet> findAll(Specification<CardSet> spec, Pageable pageable);
 }

@@ -8,7 +8,6 @@ import java.util.UUID;
 
 @Data
 public class BasicUserDto implements Serializable {
-    UUID id;
     String email;
     String username;
     AuthProvider provider;
