@@ -77,8 +77,13 @@ public class CardSetController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "creationDate") String sortBy,
-            @RequestParam(defaultValue = "desc") String order) {
+            @RequestParam(defaultValue = "desc") String order,
+            Authentication authentication) {
         try {
+            if (filterCardSetsRequest.getMine()) {
+                UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+                filterCardSetsRequest.setUserId(userDetails.getId());
+            }
             Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sortBy, order));
             return ResponseEntity.ok(cardSetService.getFilteredCardSets(pageable, filterCardSetsRequest));
         } catch (Exception e) {
