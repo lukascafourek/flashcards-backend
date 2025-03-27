@@ -9,6 +9,7 @@ import java.util.UUID;
 @Setter
 public class FilterCardSetsRequest {
     private UUID userId;
+    private Boolean mine;
     private Boolean favorite;
     private String category;
     private String search;
