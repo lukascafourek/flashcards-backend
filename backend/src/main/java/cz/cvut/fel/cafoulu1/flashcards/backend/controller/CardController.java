@@ -3,6 +3,7 @@ package cz.cvut.fel.cafoulu1.flashcards.backend.controller;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.CardRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.CardServiceImpl;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.userdetails.UserDetailsImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,7 +25,7 @@ public class CardController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> createCard(
             @PathVariable("set_id") UUID setId,
-            @RequestBody CardRequest cardRequest,
+            @Valid @RequestBody CardRequest cardRequest,
             Authentication authentication) {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
@@ -39,7 +40,7 @@ public class CardController {
     public ResponseEntity<?> updateCard(
             @PathVariable("set_id") UUID setId,
             @PathVariable("id") UUID id,
-            @RequestBody CardRequest cardRequest,
+            @Valid @RequestBody CardRequest cardRequest,
             Authentication authentication) {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();

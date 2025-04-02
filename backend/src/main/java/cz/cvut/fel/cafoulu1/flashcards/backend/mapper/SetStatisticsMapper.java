@@ -32,7 +32,7 @@ public interface SetStatisticsMapper {
             case "cardstolearnagain" -> setStatistics.setCardsToLearnAgain(setStatistics.getCardsToLearnAgain() + 1);
             case "basemethodmode" -> setStatistics.setBaseMethodMode(setStatistics.getBaseMethodMode() + 1);
             case "multiplechoicemode" -> setStatistics.setMultipleChoiceMode(setStatistics.getMultipleChoiceMode() + 1);
-            case "connectionmode" -> setStatistics.setConnectionMode(setStatistics.getConnectionMode() + 1);
+            case "truefalsemode" -> setStatistics.setTrueFalseMode(setStatistics.getTrueFalseMode() + 1);
             default -> throw new IllegalArgumentException("Set Statistic not found");
         }
     }

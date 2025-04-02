@@ -7,7 +7,7 @@ import org.springframework.data.jpa.domain.Specification;
 public class FavoriteFilter implements CardSetFilter {
     @Override
     public Specification<CardSet> apply(FilterCardSetsRequest filterRequest, Specification<CardSet> spec) {
-        if (Boolean.TRUE.equals(filterRequest.getFavorite())) {
+        if (filterRequest.getFavorite() != null && filterRequest.getFavorite() && filterRequest.getUserId() != null) {
             return spec.and(CardSetSpecification.isFavorite(filterRequest.getUserId()));
         }
         return spec;

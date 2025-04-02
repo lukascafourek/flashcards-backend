@@ -4,10 +4,7 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.dto.CardDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.CardRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.mapper.CardMapper;
 import cz.cvut.fel.cafoulu1.flashcards.backend.mapper.PictureMapper;
-import cz.cvut.fel.cafoulu1.flashcards.backend.model.Card;
-import cz.cvut.fel.cafoulu1.flashcards.backend.model.CardSet;
-import cz.cvut.fel.cafoulu1.flashcards.backend.model.Picture;
-import cz.cvut.fel.cafoulu1.flashcards.backend.model.UserStatistics;
+import cz.cvut.fel.cafoulu1.flashcards.backend.model.*;
 import cz.cvut.fel.cafoulu1.flashcards.backend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;
@@ -32,13 +29,17 @@ public class CardServiceImpl implements CardService {
 
     private final UserStatisticsRepository userStatisticsRepository;
 
+    private final UserRepository userRepository;
+
     private final CardMapper cardMapper;
 
     private final PictureMapper pictureMapper;
 
     private final Tika tika = new Tika();
 
-    private static final int MAX_IMAGE_SIZE = 2 * 1024 * 1024;
+    private static final int MAX_IMAGE_SIZE = 1024 * 1024;
+
+    private static final int MAX_IMAGE_COUNT_PER_USER = 1;
 
     @Transactional
     @Override
@@ -54,16 +55,22 @@ public class CardServiceImpl implements CardService {
         UserStatistics userStatistics = userStatisticsRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User statistics not found"));
         userStatistics.setCardsCreated(userStatistics.getCardsCreated() + 1);
+        userStatisticsRepository.save(userStatistics);
+        cardRepository.save(card);
         if (cardRequest.getPicture() != null) {
+            User user = cardSet.getUser();
+            if (user.getNumberOfImages() >= MAX_IMAGE_COUNT_PER_USER) {
+                throw new IllegalArgumentException("You have reached the maximum number of images on your account");
+            }
             byte[] decodedPicture = Base64.getDecoder().decode(cardRequest.getPicture());
             if (decodedPicture.length > MAX_IMAGE_SIZE) {
-                throw new IllegalArgumentException("Image size exceeds the 2MB limit");
+                throw new IllegalArgumentException("Image size exceeds the 1MB limit");
             }
             Picture picture = pictureMapper.createPicture(decodedPicture, card);
             pictureRepository.save(picture);
+            user.setNumberOfImages(user.getNumberOfImages() + 1);
+            userRepository.save(user);
         }
-        userStatisticsRepository.save(userStatistics);
-        cardRepository.save(card);
         cardSet.getCards().add(card);
         cardSetRepository.save(cardSet);
         return card.getId();
@@ -77,22 +84,34 @@ public class CardServiceImpl implements CardService {
         if (cardRequest.getPicture() != null) {
             byte[] decodedPicture = Base64.getDecoder().decode(cardRequest.getPicture());
             if (decodedPicture.length > MAX_IMAGE_SIZE) {
-                throw new IllegalArgumentException("Image size exceeds the 2MB limit");
+                throw new IllegalArgumentException("Image size exceeds the 1MB limit");
             }
             pictureRepository.findById(cardId)
                     .ifPresentOrElse(picture -> {
                         picture.setPicture(decodedPicture);
                         pictureRepository.save(picture);
                     }, () -> {
+                        User user = card.getCardSet().getUser();
+                        if (user.getNumberOfImages() >= MAX_IMAGE_COUNT_PER_USER) {
+                            throw new IllegalArgumentException("You have reached the maximum number of images on your account");
+                        }
                         Picture newPicture = pictureMapper.createPicture(decodedPicture, updatedCard);
                         pictureRepository.save(newPicture);
+                        user.setNumberOfImages(user.getNumberOfImages() + 1);
+                        userRepository.save(user);
                     });
         } else {
-            pictureRepository.findById(cardId).ifPresent(pictureRepository::delete);
+            pictureRepository.findById(cardId).ifPresent(picture -> {
+                User user = card.getCardSet().getUser();
+                pictureRepository.delete(picture);
+                user.setNumberOfImages(user.getNumberOfImages() - 1);
+                userRepository.save(user);
+            });
         }
         cardRepository.save(updatedCard);
     }
 
+    @Transactional
     @Override
     public List<CardDto> getCards(UUID cardSetId) {
         CardSet cardSet = cardSetRepository.findById(cardSetId)
@@ -116,8 +135,15 @@ public class CardServiceImpl implements CardService {
     @Override
     public void deleteCard(UUID cardSetId, UUID cardId, UUID userId) {
         Card card = validateIds(cardSetId, cardId, userId);
-        pictureRepository.findById(card.getId()).ifPresent(pictureRepository::delete);
-        card.getCardSet().getCards().remove(card);
+        CardSet cardSet = card.getCardSet();
+        pictureRepository.findById(card.getId()).ifPresent(picture -> {
+            User user = cardSet.getUser();
+            pictureRepository.delete(picture);
+            user.setNumberOfImages(user.getNumberOfImages() - 1);
+            userRepository.save(user);
+        });
+        cardSet.getCards().remove(card);
+        cardSetRepository.save(cardSet);
         cardRepository.delete(card);
     }
 

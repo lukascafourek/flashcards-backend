@@ -54,8 +54,8 @@ public class UserServiceImpl implements UserService {
                 .build();
         UserStatistics userStatistics = new UserStatistics();
         userStatistics.setUser(user);
-        userStatisticsRepository.save(userStatistics);
         userRepository.save(user);
+        userStatisticsRepository.save(userStatistics);
     }
 
     @Transactional
@@ -63,14 +63,25 @@ public class UserServiceImpl implements UserService {
     public void updateUser(String email, UpdateUserRequest updateUserRequest) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        if (user.getProvider().equals(AuthProvider.GOOGLE) && (updateUserRequest.getEmail() != null || updateUserRequest.getPassword() != null)) {
+            throw new IllegalArgumentException("You cannot change your email or password when registered with Google.");
+        }
         if (updateUserRequest.getCheck() != null && !passwordEncoder.matches(updateUserRequest.getCheck(), user.getPassword())) {
             throw new IllegalArgumentException("Your current password is invalid.");
         }
         if (updateUserRequest.getEmail() != null && userRepository.existsByEmail(updateUserRequest.getEmail())) {
             throw new IllegalArgumentException("Email is already in use.");
         }
-        User updatedUser = userMapper.partialUpdateUser(updateUserRequest, user);
-        userRepository.save(updatedUser);
+        if (updateUserRequest.getUsername() != null && !updateUserRequest.getUsername().isEmpty()) {
+            user.setUsername(updateUserRequest.getUsername());
+        }
+        if (updateUserRequest.getEmail() != null && !updateUserRequest.getEmail().isEmpty()) {
+            user.setEmail(updateUserRequest.getEmail());
+        }
+        if (updateUserRequest.getPassword() != null && !updateUserRequest.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(updateUserRequest.getPassword()));
+        }
+        userRepository.save(user);
     }
 
 //    @Override
@@ -130,6 +141,7 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(user);
     }
 
+    @Transactional
     @Override
     public BasicUserDto findById(UUID userId) {
         User user = userRepository.findById(userId)

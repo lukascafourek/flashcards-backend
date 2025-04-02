@@ -40,7 +40,12 @@ public class CardSetDeletionHelper {
         userRepository.saveAll(setStatisticsUsers);
         setStatisticsRepository.deleteAll(cardSet.getSetStatistics());
         cardSet.getCards().forEach((card) ->
-                pictureRepository.findById(card.getId()).ifPresent(pictureRepository::delete));
+                pictureRepository.findById(card.getId()).ifPresent(picture -> {
+                    User user = cardSet.getUser();
+                    pictureRepository.delete(picture);
+                    user.setNumberOfImages(user.getNumberOfImages() - 1);
+                    userRepository.save(user);
+                }));
         cardRepository.deleteAll(cardSet.getCards());
     }
 }

@@ -13,7 +13,7 @@ public class CreateSetStatistics implements Serializable {
     Integer cardsToLearnAgain;
     Integer baseMethodMode;
     Integer multipleChoiceMode;
-    Integer connectionMode;
+    Integer trueFalseMode;
     BasicCardSetDto cardSet;
     BasicUserDto user;
 }

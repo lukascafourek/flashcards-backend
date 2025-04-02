@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,6 +26,9 @@ public class CardSet {
     @Column(nullable = false, name = "name")
     private String name;
 
+    @Column(name = "description")
+    private String description;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "category")
     private Category category;
@@ -39,11 +43,11 @@ public class CardSet {
 
     @OneToMany(mappedBy = "cardSet", fetch = FetchType.LAZY)
     @ToString.Exclude
-    private List<Card> cards;
+    private List<Card> cards = new ArrayList<>();
 
     @OneToMany(mappedBy = "cardSet", fetch = FetchType.LAZY)
     @ToString.Exclude
-    private List<SetStatistics> setStatistics;
+    private List<SetStatistics> setStatistics = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -52,5 +56,5 @@ public class CardSet {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     @ToString.Exclude
-    private List<User> favoriteUsers;
+    private List<User> favoriteUsers = new ArrayList<>();
 }

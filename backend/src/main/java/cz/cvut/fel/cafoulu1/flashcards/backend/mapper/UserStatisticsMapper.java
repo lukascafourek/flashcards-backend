@@ -34,7 +34,7 @@ public interface UserStatisticsMapper {
             case "cardscreated" -> userStatistics.setCardsCreated(userStatistics.getCardsCreated() + 1);
             case "basemethodmodes" -> userStatistics.setBaseMethodModes(userStatistics.getBaseMethodModes() + 1);
             case "multiplechoicemodes" -> userStatistics.setMultipleChoiceModes(userStatistics.getMultipleChoiceModes() + 1);
-            case "connectionmodes" -> userStatistics.setConnectionModes(userStatistics.getConnectionModes() + 1);
+            case "truefalsemodes" -> userStatistics.setTrueFalseModes(userStatistics.getTrueFalseModes() + 1);
             default -> throw new IllegalArgumentException("User Statistic not found");
         }
     }

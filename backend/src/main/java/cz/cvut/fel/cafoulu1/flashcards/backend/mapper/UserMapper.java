@@ -40,7 +40,4 @@ public interface UserMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     User partialUpdateBasic(BasicUserDto basicUserDto, @MappingTarget User user);
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    User partialUpdateUser(UpdateUserRequest updateUserRequest, @MappingTarget User user);
 }

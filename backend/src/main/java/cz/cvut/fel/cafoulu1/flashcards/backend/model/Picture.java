@@ -25,7 +25,6 @@ public class Picture {
     @ToString.Exclude
     private Card card;
 
-    @Lob
     @Column(nullable = false, columnDefinition = "bytea", name = "picture")
     private byte[] picture;
 }
