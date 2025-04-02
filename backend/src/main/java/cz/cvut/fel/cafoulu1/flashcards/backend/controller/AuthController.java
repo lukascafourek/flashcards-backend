@@ -10,6 +10,8 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.service.UserServiceImpl;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.emails.RegistrationEmailImpl;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.userdetails.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -19,6 +21,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
@@ -37,9 +40,10 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
 
     private final JwtUtils jwtUtils;
+    private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
         try {
             userService.registerUser(registerRequest);
             String email = registerRequest.getEmail();
@@ -52,7 +56,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -82,7 +86,7 @@ public class AuthController {
 
     @PatchMapping("/update-user")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<String> updateUser(@RequestBody UpdateUserRequest updateUserRequest, Authentication authentication) {
+    public ResponseEntity<String> updateUser(@Valid @RequestBody UpdateUserRequest updateUserRequest, Authentication authentication) {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
             userService.updateUser(userDetails.getUsername(), updateUserRequest);
@@ -177,8 +181,8 @@ public class AuthController {
         }
     }
 
-    @PutMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestParam String email, @RequestParam String password) {
+    @PatchMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestParam @Size(max = 255) String email, @RequestParam @Size(max = 255) String password) {
         try {
             UpdateUserRequest updateUserRequest = new UpdateUserRequest();
             updateUserRequest.setPassword(password);

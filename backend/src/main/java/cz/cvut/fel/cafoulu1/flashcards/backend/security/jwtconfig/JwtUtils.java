@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.crypto.SecretKey;
 
+import cz.cvut.fel.cafoulu1.flashcards.backend.service.oauth2.CustomOAuth2User;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.userdetails.UserDetailsImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,14 +28,22 @@ public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
     public String generateJwtToken(Authentication authentication) {
-        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
         int jwtExpirationMs = 1000 * 60 * 60 * 24;
-        return Jwts.builder()
-                .subject((userPrincipal.getUsername()))
-                .issuedAt(new Date())
-                .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
-                .signWith(getSigningKey())
-                .compact();
+        String subject = null;
+        if (authentication.getPrincipal() instanceof UserDetailsImpl userDetails) {
+            subject = userDetails.getUsername();
+        } else if (authentication.getPrincipal() instanceof CustomOAuth2User oAuth2User) {
+            subject = oAuth2User.getEmail();
+        }
+        if (subject != null) {
+            return Jwts.builder()
+                    .subject(subject)
+                    .issuedAt(new Date())
+                    .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
+                    .signWith(getSigningKey())
+                    .compact();
+        }
+        return null;
     }
 
     private SecretKey getSigningKey() {

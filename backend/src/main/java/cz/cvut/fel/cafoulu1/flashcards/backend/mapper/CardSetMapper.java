@@ -4,8 +4,12 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.dto.CardSetDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicCardSetDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.create.CreateCardSet;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.CardSetRequest;
+import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.FilterCardSetsRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.CardSet;
+import cz.cvut.fel.cafoulu1.flashcards.backend.model.Category;
 import org.mapstruct.*;
+
+import java.util.UUID;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface CardSetMapper {
@@ -34,6 +38,8 @@ public interface CardSetMapper {
     BasicCardSetDto toDtoBasic(CardSet cardSet);
 
     CardSet createCardSet(CardSetRequest cardSetRequest);
+
+    FilterCardSetsRequest createFilterCardSetsRequest(String category, String search, Boolean mine, Boolean favorite, UUID userId);
 
 //    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 //    CardSet partialUpdate(CardSetDto cardSetDto, @MappingTarget CardSet cardSet);

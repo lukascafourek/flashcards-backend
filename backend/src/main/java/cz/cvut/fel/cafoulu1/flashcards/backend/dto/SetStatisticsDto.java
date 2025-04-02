@@ -18,7 +18,7 @@ public class SetStatisticsDto implements Serializable {
     Integer cardsToLearnAgain;
     Integer baseMethodMode;
     Integer multipleChoiceMode;
-    Integer connectionMode;
+    Integer trueFalseMode;
     BasicCardSetDto cardSet;
     BasicUserDto user;
 }

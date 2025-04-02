@@ -6,6 +6,7 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.model.SetStatistics;
 import cz.cvut.fel.cafoulu1.flashcards.backend.repository.SetStatisticsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -19,6 +20,7 @@ public class SetStatisticsServiceImpl implements SetStatisticsService {
 
     private final SetStatisticsMapper setStatisticsMapper;
 
+    @Transactional
     @Override
     public BasicSetStatisticsDto getStatistics(UUID id) {
         SetStatistics setStatistics = setStatisticsRepository.findById(id)
@@ -26,6 +28,7 @@ public class SetStatisticsServiceImpl implements SetStatisticsService {
         return setStatisticsMapper.toDtoBasic(setStatistics);
     }
 
+    @Transactional
     @Override
     public void incrementWantedStatistic(UUID cardSetId, UUID userId, String statistic) {
         SetStatistics setStatistics = setStatisticsRepository.findByCardSetIdAndUserId(cardSetId, userId)

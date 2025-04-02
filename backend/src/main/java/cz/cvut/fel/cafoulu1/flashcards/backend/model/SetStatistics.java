@@ -21,22 +21,22 @@ public class SetStatistics {
     private UUID id;
 
     @Column(nullable = false, name = "sets_learned", columnDefinition = "integer default 0")
-    private Integer setsLearned;
+    private Integer setsLearned = 0;
 
     @Column(nullable = false, name = "cards_learned", columnDefinition = "integer default 0")
-    private Integer cardsLearned;
+    private Integer cardsLearned = 0;
 
     @Column(nullable = false, name = "cards_to_learn_again", columnDefinition = "integer default 0")
-    private Integer cardsToLearnAgain;
+    private Integer cardsToLearnAgain = 0;
 
     @Column(nullable = false, name = "base_method_mode", columnDefinition = "integer default 0")
-    private Integer baseMethodMode;
+    private Integer baseMethodMode = 0;
 
     @Column(nullable = false, name = "multiple_choice_mode", columnDefinition = "integer default 0")
-    private Integer multipleChoiceMode;
+    private Integer multipleChoiceMode = 0;
 
-    @Column(nullable = false, name = "connection_mode", columnDefinition = "integer default 0")
-    private Integer connectionMode;
+    @Column(nullable = false, name = "true_false_mode", columnDefinition = "integer default 0")
+    private Integer trueFalseMode = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "card_set_id")

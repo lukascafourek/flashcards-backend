@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Random;
@@ -24,6 +25,7 @@ public class TokenServiceImpl implements TokenService {
 
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     @Override
     public String generateToken(String email) {
         User user = userRepository.findByEmail(email)
@@ -33,13 +35,14 @@ public class TokenServiceImpl implements TokenService {
         }
         String rawToken = new Random().nextInt(10000000, 100000000) + "";
         Token token = new Token();
-        token.setUserId(user.getId());
+        token.setUser(user);
         token.setResetToken(passwordEncoder.encode(rawToken));
         token.setExpirationDate(LocalDateTime.now().plusMinutes(15));
         tokenRepository.save(token);
         return rawToken;
     }
 
+    @Transactional
     @Override
     public void verifyToken(String email, String token) {
         User user = userRepository.findByEmail(email)

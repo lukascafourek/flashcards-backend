@@ -26,26 +26,26 @@ public class UserStatistics {
     private User user;
 
     @Column(nullable = false, name = "total_sets_learned", columnDefinition = "integer default 0")
-    private Integer totalSetsLearned;
+    private Integer totalSetsLearned = 0;
 
     @Column(nullable = false, name = "total_cards_learned", columnDefinition = "integer default 0")
-    private Integer totalCardsLearned;
+    private Integer totalCardsLearned = 0;
 
     @Column(nullable = false, name = "total_cards_to_learn_again", columnDefinition = "integer default 0")
-    private Integer totalCardsToLearnAgain;
+    private Integer totalCardsToLearnAgain = 0;
 
     @Column(nullable = false, name = "sets_created", columnDefinition = "integer default 0")
-    private Integer setsCreated;
+    private Integer setsCreated = 0;
 
     @Column(nullable = false, name = "cards_created", columnDefinition = "integer default 0")
-    private Integer cardsCreated;
+    private Integer cardsCreated = 0;
 
     @Column(nullable = false, name = "base_method_modes", columnDefinition = "integer default 0")
-    private Integer baseMethodModes;
+    private Integer baseMethodModes = 0;
 
     @Column(nullable = false, name = "multiple_choice_modes", columnDefinition = "integer default 0")
-    private Integer multipleChoiceModes;
+    private Integer multipleChoiceModes = 0;
 
-    @Column(nullable = false, name = "connection_modes", columnDefinition = "integer default 0")
-    private Integer connectionModes;
+    @Column(nullable = false, name = "true_false_modes", columnDefinition = "integer default 0")
+    private Integer trueFalseModes = 0;
 }

@@ -63,9 +63,9 @@ public class CardSetServiceImpl implements CardSetService {
                 .orElseThrow(() -> new IllegalArgumentException("User statistics not found"));
         userStatistics.setSetsCreated(userStatistics.getSetsCreated() + 1);
         userStatisticsRepository.save(userStatistics);
-        setStatisticsRepository.save(setStatistics);
         cardSet.getSetStatistics().add(setStatistics);
         cardSetRepository.save(cardSet);
+        setStatisticsRepository.save(setStatistics);
         user.getCardSets().add(cardSet);
         user.getSetStatistics().add(setStatistics);
         userRepository.save(user);
@@ -96,6 +96,7 @@ public class CardSetServiceImpl implements CardSetService {
         cardSetRepository.save(updatedCardSet);
     }
 
+    @Transactional
     @Override
     public CardSetDto getCardSet(UUID cardSetId, UUID userId) {
         CardSet cardSet = cardSetRepository.findById(cardSetId)
@@ -111,15 +112,19 @@ public class CardSetServiceImpl implements CardSetService {
             return cardDto;
         }).toList();
         CardSetDto dto = new CardSetDto();
-        dto.setBasicCardSetDto(cardSetMapper.toDtoBasic(cardSet));
+        BasicCardSetDto basicCardSetDto = cardSetMapper.toDtoBasic(cardSet);
+        basicCardSetDto.setCreator(cardSet.getUser().getUsername());
+        dto.setBasicCardSetDto(basicCardSetDto);
         dto.setSetStatistics(setStatisticsMapper.toDtoBasic(setStatistics));
         dto.setCards(List.copyOf(cards));
         dto.setFavorite(cardSet.getFavoriteUsers().contains(cardSet.getUser()));
         dto.setCreator(cardSet.getUser().getId().equals(userId));
         dto.setCategories(List.of(Category.values()));
+        dto.setDescription(cardSet.getDescription());
         return dto;
     }
 
+    @Transactional
     @Override
     public CardSetsResponse getFilteredCardSets(Pageable pageable, FilterCardSetsRequest filterCardSetsRequest) {
         Specification<CardSet> spec = ((root, query, criteriaBuilder) -> criteriaBuilder.conjunction());
@@ -140,8 +145,12 @@ public class CardSetServiceImpl implements CardSetService {
                 })
                 .toList();
         CardSetsResponse response = new CardSetsResponse();
-        response.setPages((int) Math.ceil((double) cardSetRepository.findAll().size() / pageable.getPageSize()));
-//        response.setSetsCountOnPage(cardSets.size());
+        int size = cardSetRepository.findAll().size();
+        if (size > 0) {
+            response.setPages((int) Math.ceil((double) size / pageable.getPageSize()));
+        } else {
+            response.setPages(1);
+        }
         response.setCategories(List.of(Category.values()));
         response.setCardSets(List.copyOf(cardSets));
         return response;

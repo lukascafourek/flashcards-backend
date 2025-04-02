@@ -1,8 +1,11 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.apache.commons.lang3.builder.ToStringExclude;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,6 +28,8 @@ public class User {
     private String email;
 
     @Column(name = "password")
+    @JsonIgnore
+    @ToStringExclude
     private String password;
 
     @Column(nullable = false, name = "username")
@@ -34,15 +39,18 @@ public class User {
     @Column(nullable = false, name = "provider")
     private AuthProvider provider;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private List<CardSet> cardSets;
+    @Column(nullable = false, name = "number_of_images", columnDefinition = "integer default 0")
+    private Integer numberOfImages = 0;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @ToString.Exclude
-    private List<SetStatistics> setStatistics;
+    private List<CardSet> cardSets = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<SetStatistics> setStatistics = new ArrayList<>();
 
     @ManyToMany(mappedBy = "favoriteUsers", fetch = FetchType.LAZY)
     @ToString.Exclude
-    private List<CardSet> favoriteSets;
+    private List<CardSet> favoriteSets = new ArrayList<>();
 }

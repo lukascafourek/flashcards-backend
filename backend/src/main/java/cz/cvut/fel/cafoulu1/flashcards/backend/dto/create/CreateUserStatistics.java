@@ -15,5 +15,5 @@ public class CreateUserStatistics implements Serializable {
     Integer cardsCreated;
     Integer baseMethodModes;
     Integer multipleChoiceModes;
-    Integer connectionModes;
+    Integer trueFalseModes;
 }

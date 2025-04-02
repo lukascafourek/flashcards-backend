@@ -15,5 +15,5 @@ public class BasicUserStatisticsDto implements Serializable {
     Integer cardsCreated;
     Integer baseMethodModes;
     Integer multipleChoiceModes;
-    Integer connectionModes;
+    Integer trueFalseModes;
 }
