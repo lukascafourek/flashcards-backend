@@ -1,13 +1,18 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.service;
 
-import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicSetStatisticsDto;
-
 import java.util.UUID;
 
 /**
  * Set statistics service for handling set statistics requests. It is used for incrementing wanted set statistics.
- * @see GenericStatisticsService
  */
-public interface SetStatisticsService extends GenericStatisticsService<BasicSetStatisticsDto> {
-    void incrementWantedStatistic(UUID cardSetId, UUID userId, String statistic);
+public interface SetStatisticsService {
+    /**
+     * Increments the wanted statistics for a card set.
+     *
+     * @param cardSetId     the ID of the card set
+     * @param userId        the ID of the user
+     * @param firstStat     the first statistic to increment
+     * @param secondStat    the second statistic to increment (optional)
+     */
+    void incrementWantedStatistics(UUID cardSetId, UUID userId, String firstStat, String secondStat);
 }

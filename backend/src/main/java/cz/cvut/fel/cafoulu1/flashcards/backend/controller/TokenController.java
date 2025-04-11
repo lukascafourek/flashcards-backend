@@ -4,6 +4,8 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.service.TokenServiceImpl;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.emails.ResetPasswordEmailImpl;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,17 +22,20 @@ public class TokenController {
 
     private final ResetPasswordEmailImpl resetPasswordEmail;
 
+    private static final Logger logger = LogManager.getLogger(TokenController.class);
+
     @PostMapping("/request-reset")
     public ResponseEntity<?> sendToken(@RequestBody Map<String, String> request) {
         try {
             String email = request.get("email");
             if (email == null || email.isEmpty() || email.length() > 255) {
-                return ResponseEntity.badRequest().body("Email is required (max 255 characters)");
+                throw new IllegalArgumentException("Email is required (max 255 characters)");
             }
             String token = tokenService.generateToken(email);
             resetPasswordEmail.sendEmail(token, email);
             return ResponseEntity.ok("Token sent successfully");
         } catch (Exception e) {
+            logger.error("Error sending token: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -41,6 +46,7 @@ public class TokenController {
             tokenService.verifyToken(email, token);
             return ResponseEntity.ok("Token verified");
         } catch (Exception e) {
+            logger.error("Error verifying token: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

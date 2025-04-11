@@ -1,7 +1,5 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.service.emails;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -10,19 +8,13 @@ import org.springframework.stereotype.Service;
  * Service for sending a registration email to a new user.
  */
 @Service
-@RequiredArgsConstructor
-public class RegistrationEmailImpl implements EmailService {
-    private final JavaMailSender mailSender;
-
-    @Value("${spring.mail.username}")
-    private String sender;
-
-    private static final String SUPPORT_EMAIL_1 = "cafoulu1@fel.cvut.cz";
-
-    private static final String SUPPORT_EMAIL_2 = "lukascafourek2002@gmail.com";
+public class RegistrationEmailImpl extends AbstractEmail implements EmailService {
+    public RegistrationEmailImpl(JavaMailSender mailSender) {
+        super(mailSender);
+    }
 
     @Override
-    public void sendEmail(String email, String username) {
+    public void sendEmail(String username, String email) {
         String subject = "Welcome to Flashcards Web Learning App";
         String message = """
                 Hello %s,
@@ -32,8 +24,9 @@ public class RegistrationEmailImpl implements EmailService {
                \s
                 ✨ What can you do in our app?
                 ✅ Create your own flashcard sets
-                ✅ Practice in a fun and effective way
-                ✅ Track your progress
+                ✅ Explore flashcard sets created by others
+                ✅ Practice in three different modes
+                ✅ Track your learning progress
                \s
                 Please do not reply to this email.
                 If you have any questions or need help, feel free to contact us at:
@@ -44,12 +37,12 @@ public class RegistrationEmailImpl implements EmailService {
                \s
                 Thank you,
                 Flashcards Web Learning App Team
-               \s""".formatted(username, SUPPORT_EMAIL_1, SUPPORT_EMAIL_2);
+               \s""".formatted(username, getSUPPORT_EMAIL_1(), getSUPPORT_EMAIL_2());
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(email);
         mailMessage.setSubject(subject);
         mailMessage.setText(message);
-        mailMessage.setFrom(sender);
-        mailSender.send(mailMessage);
+        mailMessage.setFrom(getSender());
+        getMailSender().send(mailMessage);
     }
 }

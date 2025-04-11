@@ -1,11 +1,10 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.controller;
 
-import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicUserDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.LoginRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.RegisterRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.UpdateUserRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.security.jwtconfig.JwtUtils;
-//import cz.cvut.fel.cafoulu1.flashcards.backend.security.response.JwtResponse;
+import cz.cvut.fel.cafoulu1.flashcards.backend.security.response.CookieSetup;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.UserServiceImpl;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.emails.RegistrationEmailImpl;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.userdetails.UserDetailsImpl;
@@ -13,18 +12,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Duration;
+import java.util.UUID;
 
 /**
  * This is a controller for handling authentication requests.
@@ -40,7 +37,8 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
 
     private final JwtUtils jwtUtils;
-    private final PasswordEncoder passwordEncoder;
+
+    private static final Logger logger = LogManager.getLogger(AuthController.class);
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
@@ -48,9 +46,10 @@ public class AuthController {
             userService.registerUser(registerRequest);
             String email = registerRequest.getEmail();
             String username = registerRequest.getUsername();
-            registrationEmail.sendEmail(email, username);
+            registrationEmail.sendEmail(username, email);
             return ResponseEntity.ok("User registered successfully.");
         } catch (Exception e) {
+            logger.error("Error during user registration: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -59,29 +58,35 @@ public class AuthController {
     public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-//        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            String jwt = jwtUtils.generateJwtToken(authentication);
-            ResponseCookie jwtCookie = ResponseCookie.from("jwt", jwt)
-                    .httpOnly(true)
-                    .secure(false) // Nastav na `true`, pokud jedeš přes HTTPS!
-                    .path("/")
-                    .maxAge(Duration.ofDays(1))
-//                .domain("localhost")
-                    .build();
-            response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
+            CookieSetup.setCookies(response, authentication, jwtUtils);
             return ResponseEntity.ok("User logged in successfully.");
-//        return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getUsername()));
         } catch (Exception e) {
+            logger.error("Error during user login: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<BasicUserDto> getCurrentUser(Authentication authentication) {
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        return ResponseEntity.ok(userService.findById(userDetails.getId()));
+    public ResponseEntity<?> getCurrentUser(Authentication authentication) {
+        try {
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            return ResponseEntity.ok(userService.findById(userDetails.getId()));
+        } catch (Exception e) {
+            logger.error("Error during fetching current user: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/get-all-users")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> getAllUsers() {
+        try {
+            return ResponseEntity.ok(userService.findAll());
+        } catch (Exception e) {
+            logger.error("Error during fetching all users: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PatchMapping("/update-user")
@@ -92,45 +97,22 @@ public class AuthController {
             userService.updateUser(userDetails.getUsername(), updateUserRequest);
             return ResponseEntity.ok("User updated successfully.");
         } catch (Exception e) {
+            logger.error("Error during updating user: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-//    @PutMapping("/update-email")
-//    @PreAuthorize("isAuthenticated()")
-//    public ResponseEntity<String> updateEmail(@RequestParam String email, Authentication authentication) {
-//        try {
-//            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-//            userService.updateEmail(userDetails.getId(), email);
-//            return ResponseEntity.ok("Email updated successfully.");
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        }
-//    }
-//
-//    @PutMapping("/update-username")
-//    @PreAuthorize("isAuthenticated()")
-//    public ResponseEntity<String> updateUsername(@RequestParam String username, Authentication authentication) {
-//        try {
-//            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-//            userService.updateUsername(userDetails.getId(), username);
-//            return ResponseEntity.ok("Username updated successfully.");
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        }
-//    }
-//
-//    @PutMapping("/update-password")
-//    @PreAuthorize("isAuthenticated()")
-//    public ResponseEntity<String> updatePassword(@RequestParam String password, Authentication authentication) {
-//        try {
-//            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-//            userService.updatePassword(userDetails.getId(), password);
-//            return ResponseEntity.ok("Password updated successfully.");
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        }
-//    }
+    @PatchMapping("/update-user/{email}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> updateUserByAdmin(@PathVariable("email") String email, @Valid @RequestBody UpdateUserRequest updateUserRequest) {
+        try {
+            userService.updateUser(email, updateUserRequest);
+            return ResponseEntity.ok("User updated successfully.");
+        } catch (Exception e) {
+            logger.error("Error during updating user by admin: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @DeleteMapping("/delete-account")
     @PreAuthorize("isAuthenticated()")
@@ -138,45 +120,33 @@ public class AuthController {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
             userService.deleteUser(userDetails.getId());
-            ResponseCookie jwtCookie = ResponseCookie.from("jwt", "")
-                    .httpOnly(true)
-                    .secure(false)  // Nastav na true, pokud používáš HTTPS
-                    .path("/")
-                    .maxAge(0)
-                    .sameSite("Lax")
-                    .build();
-            response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
+            CookieSetup.unsetCookies(response);
             return ResponseEntity.ok("Account deleted successfully.");
         } catch (Exception e) {
+            logger.error("Error during deleting account: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-//    @GetMapping("/email-exists")
-//    public ResponseEntity<Boolean> emailExists(@RequestParam String email) {
-//        return ResponseEntity.ok(userService.existsByEmail(email));
-//    }
-//
-//    @GetMapping("/check-password")
-//    @PreAuthorize("isAuthenticated()")
-//    public ResponseEntity<Boolean> checkPassword(@RequestParam String password, Authentication authentication) {
-//        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-//        return ResponseEntity.ok(userService.checkPassword(userDetails.getId(), password));
-//    }
+    @DeleteMapping("/delete-account/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> deleteAccountByAdmin(@PathVariable("userId") UUID userId) {
+        try {
+            userService.deleteUser(userId);
+            return ResponseEntity.ok("Account deleted successfully.");
+        } catch (Exception e) {
+            logger.error("Error during deleting account by admin: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logoutUser(HttpServletResponse response) {
         try {
-            ResponseCookie jwtCookie = ResponseCookie.from("jwt", "")
-                    .httpOnly(true)
-                    .secure(false)  // Nastav na true, pokud používáš HTTPS
-                    .path("/")
-                    .maxAge(0)
-                    .sameSite("Lax")
-                    .build();
-            response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
+            CookieSetup.unsetCookies(response);
             return ResponseEntity.ok("User logged out successfully.");
         } catch (Exception e) {
+            logger.error("Error during user logout: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -189,6 +159,7 @@ public class AuthController {
             userService.updateUser(email, updateUserRequest);
             return ResponseEntity.ok("Password reset successfully.");
         } catch (Exception e) {
+            logger.error("Error during password reset: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

@@ -6,8 +6,8 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.mapper.CardMapper;
 import cz.cvut.fel.cafoulu1.flashcards.backend.mapper.PictureMapper;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.*;
 import cz.cvut.fel.cafoulu1.flashcards.backend.repository.*;
+import cz.cvut.fel.cafoulu1.flashcards.backend.service.helper.CardMapperHelper;
 import lombok.RequiredArgsConstructor;
-import org.apache.tika.Tika;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,8 +35,6 @@ public class CardServiceImpl implements CardService {
 
     private final PictureMapper pictureMapper;
 
-    private final Tika tika = new Tika();
-
     private static final int MAX_IMAGE_SIZE = 1024 * 1024;
 
     private static final int MAX_IMAGE_COUNT_PER_USER = 1;
@@ -49,9 +47,9 @@ public class CardServiceImpl implements CardService {
         if (!cardSet.getUser().getId().equals(userId)) {
             throw new IllegalArgumentException("Card set does not belong to user");
         }
-
         Card card = cardMapper.createCard(cardRequest);
         card.setCardSet(cardSet);
+        card.setCardOrder(cardSet.getCards().size());
         UserStatistics userStatistics = userStatisticsRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User statistics not found"));
         userStatistics.setCardsCreated(userStatistics.getCardsCreated() + 1);
@@ -116,18 +114,8 @@ public class CardServiceImpl implements CardService {
     public List<CardDto> getCards(UUID cardSetId) {
         CardSet cardSet = cardSetRepository.findById(cardSetId)
                 .orElseThrow(() -> new IllegalArgumentException("Card set not found"));
-        return cardRepository.findByCardSet(cardSet).stream()
-                .map(card -> {
-                    CardDto cardDto = cardMapper.toDto(card);
-                    pictureRepository.findById(card.getId()).ifPresent(picture -> {
-                        byte[] imageData = picture.getPicture();
-                        String mimeType = tika.detect(imageData);
-                        String encodedPicture = Base64.getEncoder().encodeToString(imageData);
-                        cardDto.setPicture(encodedPicture);
-                        cardDto.setMimeType(mimeType);
-                    });
-                    return cardDto;
-                })
+        return cardRepository.findByCardSetOrderByCardOrderAsc(cardSet).stream()
+                .map(card -> CardMapperHelper.getInstance().mapCardToDto(card, cardMapper, pictureRepository))
                 .toList();
     }
 
@@ -147,10 +135,12 @@ public class CardServiceImpl implements CardService {
         cardRepository.delete(card);
     }
 
-    private Card validateIds(UUID cardSetId, UUID cardId, UUID userId) {
+    protected Card validateIds(UUID cardSetId, UUID cardId, UUID userId) {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new IllegalArgumentException("Card not found"));
-        if (!card.getCardSet().getUser().getId().equals(userId)) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        if (!card.getCardSet().getUser().getId().equals(userId) && !user.getRole().equals(Role.ADMIN)) {
             throw new IllegalArgumentException("Card does not belong to user");
         }
         if (!card.getCardSet().getId().equals(cardSetId)) {

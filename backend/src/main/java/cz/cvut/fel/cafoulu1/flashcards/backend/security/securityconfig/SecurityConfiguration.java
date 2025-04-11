@@ -21,6 +21,7 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
@@ -29,8 +30,11 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.security.jwtconfig.AuthEntryPoint
 import cz.cvut.fel.cafoulu1.flashcards.backend.security.jwtconfig.AuthTokenFilter;
 
 /**
- * This code was taken from <a href="https://github.com/eugenp/tutorials/blob/master/spring-security-modules/spring-security-core/src/main/java/com/baeldung/jwtsignkey/securityconfig/SecurityConfiguration.java">eugenp GitHub user</a>
- * and modified for the purpose of this application.
+ * This code was taken from
+ * <a href="https://github.com/eugenp/tutorials/blob/master/spring-security-modules/spring-security-core/src/main/java/com/baeldung/jwtsignkey/securityconfig/SecurityConfiguration.java">eugenp</a>
+ * on GitHub and modified for the purpose of this application.
+ * <p>
+ * This class configures the security settings for the application.
  */
 @Configuration
 @EnableWebSecurity
@@ -45,7 +49,11 @@ public class SecurityConfiguration {
 
     private final AuthenticationSuccessHandler oAuth2SuccessHandler;
 
-    private static final String[] WHITE_LIST_URL = {"/auth/**", "/test"};
+    private final AuthenticationFailureHandler oAuth2FailureHandler;
+
+    private static final String[] WHITE_LIST_URL = {"/auth/**", "/test", "/token/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**", "/actuator/**", "/h2-console/**"};
+
+    private static final String[] ADMIN_LIST_URL = {"/auth/get-all-users", "/auth/update-user/**", "/auth/delete-account/**", "/card-sets/get-all", "/card-sets/get-cards"};
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -79,28 +87,20 @@ public class SecurityConfiguration {
                         .permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**")
                         .permitAll()
-                        .requestMatchers(HttpMethod.POST, "/token/request-reset")
-                        .permitAll()
-                        .requestMatchers(HttpMethod.GET, "/token/verify")
-                        .permitAll()
-                        .requestMatchers(HttpMethod.PATCH, "/auth/reset-password")
-                        .permitAll()
+                        .requestMatchers(ADMIN_LIST_URL).hasRole("ADMIN")
                         .anyRequest()
                         .authenticated())
                 .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
-//                .userDetailsService(userDetailsService)
                 .authenticationProvider(authenticationProvider())
                 .formLogin(form -> form
                         .loginProcessingUrl("/login")
-//                        .successHandler(authenticationSuccessHandler)
-//                        .failureHandler(authenticationFailureHandler)
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
+                        .failureHandler(oAuth2FailureHandler)
                 )
                 .logout(logout -> logout
-//                        .logoutUrl("/home")
                         .logoutSuccessUrl("/home")
                         .logoutSuccessHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_OK))
                         .invalidateHttpSession(true)

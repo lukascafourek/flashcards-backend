@@ -1,12 +1,10 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.dto;
 
-import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicCardSetDto;
-import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicSetStatisticsDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.AuthProvider;
+import cz.cvut.fel.cafoulu1.flashcards.backend.model.Role;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -18,7 +16,6 @@ public class UserDto implements Serializable {
     String email;
     String username;
     AuthProvider provider;
-    List<BasicCardSetDto> cardSets;
-    List<BasicSetStatisticsDto> setStatistics;
-    List<BasicCardSetDto> favoriteSets; // probably not needed - may be removed
+    Role role;
+    Integer numberOfImages;
 }

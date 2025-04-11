@@ -5,6 +5,8 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.service.CardServiceImpl;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.userdetails.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -21,6 +23,8 @@ import java.util.UUID;
 public class CardController {
     private final CardServiceImpl cardService;
 
+    private static final Logger logger = LogManager.getLogger(CardController.class);
+
     @PostMapping("/create")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> createCard(
@@ -31,6 +35,7 @@ public class CardController {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
             return ResponseEntity.ok(cardService.createCard(setId, cardRequest, userDetails.getId()));
         } catch (Exception e) {
+            logger.error("Error creating card: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -47,6 +52,7 @@ public class CardController {
             cardService.updateCard(setId, id, cardRequest, userDetails.getId());
             return ResponseEntity.ok("Card updated successfully");
         } catch (Exception e) {
+            logger.error("Error updating card: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -57,6 +63,7 @@ public class CardController {
         try {
             return ResponseEntity.ok(cardService.getCards(setId));
         } catch (Exception e) {
+            logger.error("Error getting cards: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -72,6 +79,7 @@ public class CardController {
             cardService.deleteCard(setId, id, userDetails.getId());
             return ResponseEntity.ok("Card deleted successfully");
         } catch (Exception e) {
+            logger.error("Error deleting card: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

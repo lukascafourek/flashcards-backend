@@ -4,6 +4,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * DTO Request object for updating user information.
+ */
 @Getter
 @Setter
 public class UpdateUserRequest {

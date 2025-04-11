@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @RequiredArgsConstructor
-public class CustomOAuth2UserService extends DefaultOAuth2UserService {
+public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
     private final UserRepository userRepository;
 
     private final UserStatisticsRepository userStatisticsRepository;
@@ -40,15 +40,17 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String name = oAuth2User.getAttribute("name");
         User user = userRepository.findByEmail(email)
                 .orElseGet(() -> registerNewUser(email, name));
-        if (!user.getProvider().equals(AuthProvider.GOOGLE)) {
-            user.setProvider(AuthProvider.GOOGLE);
-            userRepository.save(user);
-        }
-        return new CustomOAuth2User(userMapper.toDtoBasic(user), oAuth2User.getAttributes());
+        return new OAuth2UserImpl(userMapper.toDtoBasic(user), oAuth2User.getAttributes());
     }
 
     @Transactional
     protected User registerNewUser(String email, String name) {
+        if (email == null || email.isEmpty() || email.length() > 255) {
+            throw new IllegalArgumentException("Email is required (max 255 characters)");
+        }
+        if (name == null || name.isEmpty() || name.length() > 255) {
+            throw new IllegalArgumentException("Name is required (max 255 characters)");
+        }
         User user = userBuilder
                 .setEmail(email)
                 .setUsername(name)
@@ -58,7 +60,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         userStatistics.setUser(user);
         userStatisticsRepository.save(userStatistics);
         User savedUser = userRepository.save(user);
-        registrationEmail.sendEmail(email, name);
+        registrationEmail.sendEmail(name, email);
         return savedUser;
     }
 }

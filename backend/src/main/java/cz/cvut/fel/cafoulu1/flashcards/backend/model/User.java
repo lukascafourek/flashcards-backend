@@ -36,6 +36,10 @@ public class User {
     private String username;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, name = "role", columnDefinition = "varchar(255) default 'USER'")
+    private Role role = Role.USER;
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "provider")
     private AuthProvider provider;
 

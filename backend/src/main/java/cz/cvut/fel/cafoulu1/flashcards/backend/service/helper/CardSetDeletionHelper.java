@@ -12,6 +12,7 @@ import java.util.List;
 
 /**
  * Helper class for deletion of card sets. It deletes all related entities.
+ * Singleton class.
  */
 public class CardSetDeletionHelper {
     private static CardSetDeletionHelper instance;

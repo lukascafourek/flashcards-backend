@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * This class represents a register request.
+ * Dto that represents a request to register a new user.
  */
 @Getter
 @Setter

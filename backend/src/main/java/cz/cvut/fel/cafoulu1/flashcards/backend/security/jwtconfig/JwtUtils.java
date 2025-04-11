@@ -4,10 +4,10 @@ import java.util.Date;
 
 import javax.crypto.SecretKey;
 
-import cz.cvut.fel.cafoulu1.flashcards.backend.service.oauth2.CustomOAuth2User;
+import cz.cvut.fel.cafoulu1.flashcards.backend.service.oauth2.OAuth2UserImpl;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.userdetails.UserDetailsImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -20,19 +20,22 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 
 /**
- * This code was taken from <a href="https://github.com/eugenp/tutorials/blob/master/spring-security-modules/spring-security-core/src/main/java/com/baeldung/jwtsignkey/jwtconfig/JwtUtils.java">eugenp GitHub user</a>
- * and modified for the purpose of this application.
+ * This code was taken from
+ * <a href="https://github.com/eugenp/tutorials/blob/master/spring-security-modules/spring-security-core/src/main/java/com/baeldung/jwtsignkey/jwtconfig/JwtUtils.java">eugenp</a>
+ * on GitHub and modified for the purpose of this application.
+ * <p>
+ * This class is used to generate and validate JWT tokens.
  */
 @Component
 public class JwtUtils {
-    private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
+    private static final Logger logger = LogManager.getLogger(JwtUtils.class);
 
     public String generateJwtToken(Authentication authentication) {
         int jwtExpirationMs = 1000 * 60 * 60 * 24;
         String subject = null;
         if (authentication.getPrincipal() instanceof UserDetailsImpl userDetails) {
             subject = userDetails.getUsername();
-        } else if (authentication.getPrincipal() instanceof CustomOAuth2User oAuth2User) {
+        } else if (authentication.getPrincipal() instanceof OAuth2UserImpl oAuth2User) {
             subject = oAuth2User.getEmail();
         }
         if (subject != null) {

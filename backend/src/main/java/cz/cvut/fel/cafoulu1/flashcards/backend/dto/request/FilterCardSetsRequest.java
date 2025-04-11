@@ -6,6 +6,9 @@ import lombok.Setter;
 
 import java.util.UUID;
 
+/**
+ * DTO for getting filtered card sets.
+ */
 @Getter
 @Setter
 public class FilterCardSetsRequest {

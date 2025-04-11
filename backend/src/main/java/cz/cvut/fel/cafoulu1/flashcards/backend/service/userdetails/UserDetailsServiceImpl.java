@@ -1,6 +1,5 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.service.userdetails;
 
-import cz.cvut.fel.cafoulu1.flashcards.backend.model.AuthProvider;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.User;
 import cz.cvut.fel.cafoulu1.flashcards.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,8 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * This code was taken from <a href="https://github.com/eugenp/tutorials/blob/master/spring-security-modules/spring-security-core/src/main/java/com/baeldung/jwtsignkey/userservice/UserDetailsServiceImpl.java">eugenp GitHub user</a>
- * and modified for the purpose of this application.
+ * This code was taken from
+ * <a href="https://github.com/eugenp/tutorials/blob/master/spring-security-modules/spring-security-core/src/main/java/com/baeldung/jwtsignkey/userservice/UserDetailsServiceImpl.java">eugenp</a>
+ * on GitHub and modified for the purpose of this application.
+ * <p>
+ * This class implements the UserDetailsService interface and is responsible for loading user-specific data.
  */
 @Service
 @RequiredArgsConstructor
@@ -24,10 +26,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email: " + username));
-        if (!user.getProvider().equals(AuthProvider.LOCAL)) {
-            user.setProvider(AuthProvider.LOCAL);
-            userRepository.save(user);
-        }
         return UserDetailsImpl.build(user);
     }
 }
