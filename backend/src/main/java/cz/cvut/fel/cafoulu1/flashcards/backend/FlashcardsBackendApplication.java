@@ -37,7 +37,7 @@ public class FlashcardsBackendApplication implements CommandLineRunner {
         );
     }
 
-    @Scheduled(fixedRate = 1000 * 3600 * 2) // every 2 hours
+    @Scheduled(fixedRate = 1000 * 3600 * 2)
     public void evictAllCachesAtIntervals() {
         cacheManager.getCacheNames().forEach(cacheName -> Objects.requireNonNull(cacheManager.getCache(cacheName)).clear());
     }

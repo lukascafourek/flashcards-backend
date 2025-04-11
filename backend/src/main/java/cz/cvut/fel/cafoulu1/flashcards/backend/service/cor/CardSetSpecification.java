@@ -7,6 +7,9 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.UUID;
 
+/**
+ * Specification class for filtering card sets based on various criteria.
+ */
 public class CardSetSpecification {
     public static Specification<CardSet> hasCreator(UUID userId) {
         return (root, query, criteriaBuilder) ->
@@ -30,5 +33,15 @@ public class CardSetSpecification {
         return (root, query, criteriaBuilder) ->
                 (searchText == null || searchText.isEmpty()) ? criteriaBuilder.conjunction() :
                         criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + searchText.toLowerCase() + "%");
+    }
+
+    public static Specification<CardSet> isPublicOrOwnedByUser(UUID userId) {
+        return (root, query, criteriaBuilder) -> {
+            if (userId == null) return criteriaBuilder.conjunction();
+            return criteriaBuilder.or(
+                    criteriaBuilder.isFalse(root.get("privacy")),
+                    criteriaBuilder.equal(root.get("user").get("id"), userId)
+            );
+        };
     }
 }

@@ -1,5 +1,6 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.service;
 
+import cz.cvut.fel.cafoulu1.flashcards.backend.dto.UserDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicUserDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.RegisterRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.UpdateUserRequest;
@@ -66,6 +67,11 @@ public class UserServiceImpl implements UserService {
         if (user.getProvider().equals(AuthProvider.GOOGLE) && (updateUserRequest.getEmail() != null || updateUserRequest.getPassword() != null)) {
             throw new IllegalArgumentException("You cannot change your email or password when registered with Google.");
         }
+        if (updateUserRequest.getEmail() != null || updateUserRequest.getPassword() != null) {
+            if (updateUserRequest.getCheck() == null || updateUserRequest.getCheck().isEmpty()) {
+                throw new IllegalArgumentException("You must provide your current password to change your email or password.");
+            }
+        }
         if (updateUserRequest.getCheck() != null && !passwordEncoder.matches(updateUserRequest.getCheck(), user.getPassword())) {
             throw new IllegalArgumentException("Your current password is invalid.");
         }
@@ -83,38 +89,6 @@ public class UserServiceImpl implements UserService {
         }
         userRepository.save(user);
     }
-
-//    @Override
-//    public void updateEmail(UUID userId, String newEmail) {
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-//        user.setEmail(newEmail);
-//        userRepository.save(user);
-//    }
-//
-//    @Override
-//    public void updateUsername(UUID userId, String newUsername) {
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-//        user.setUsername(newUsername);
-//        userRepository.save(user);
-//    }
-//
-//    @Override
-//    public void updatePassword(UUID userId, String newPassword) {
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-//        user.setPassword(passwordEncoder.encode(newPassword));
-//        userRepository.save(user);
-//    }
-//
-//    @Override
-//    public void resetPassword(String email, String newPassword) {
-//        User user = userRepository.findByEmail(email)
-//                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-//        user.setPassword(passwordEncoder.encode(newPassword));
-//        userRepository.save(user);
-//    }
 
     @Transactional
     @Override
@@ -149,15 +123,11 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDtoBasic(user);
     }
 
-//    @Override
-//    public boolean existsByEmail(String email) {
-//        return userRepository.existsByEmail(email);
-//    }
-//
-//    @Override
-//    public boolean checkPassword(UUID userId, String password) {
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-//        return passwordEncoder.matches(password, user.getPassword());
-//    }
+    @Transactional
+    @Override
+    public List<UserDto> findAll() {
+        return userRepository.findAll().stream()
+                .map(userMapper::toDto)
+                .toList();
+    }
 }

@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Jackson configuration
+ * Jackson configuration class to customize the ObjectMapper.
  */
 @Configuration
 public class JacksonConfig {

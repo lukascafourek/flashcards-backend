@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * This class represents a login request.
+ * DTO class that represents the data required for a login request.
  */
 @Getter
 @Setter

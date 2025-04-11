@@ -5,9 +5,14 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicUserStatisticsDto;
 import java.util.UUID;
 
 /**
- * User statistics service for handling user statistics requests. It is used for incrementing wanted user statistics.
- * @see GenericStatisticsService
+ * Service for managing user statistics. It provides method for getting user statistics.
  */
-public interface UserStatisticsService extends GenericStatisticsService<BasicUserStatisticsDto> {
-    void incrementWantedStatistic(UUID userId, String statistic);
+public interface UserStatisticsService {
+    /**
+     * Gets the user statistics for a given user.
+     *
+     * @param userId the ID of the user
+     * @return the user statistics details
+     */
+    BasicUserStatisticsDto getUserStatistics(UUID userId);
 }

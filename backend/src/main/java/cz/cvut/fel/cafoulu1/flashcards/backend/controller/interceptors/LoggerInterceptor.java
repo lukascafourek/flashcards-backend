@@ -9,7 +9,9 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
- * Resource: https://www.baeldung.com/spring-mvc-handlerinterceptor
+ * Resource: <a href="https://www.baeldung.com/spring-mvc-handlerinterceptor">baeldung.com</a>
+ * <p>
+ * Interceptor for logging requests and responses.
  */
 @Component
 public class LoggerInterceptor implements HandlerInterceptor {
@@ -43,5 +45,4 @@ public class LoggerInterceptor implements HandlerInterceptor {
 
         strategy.logPostHandle(request);
     }
-
 }

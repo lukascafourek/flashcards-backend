@@ -4,15 +4,20 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.User;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serial;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 /**
- * This code was taken from <a href="https://github.com/eugenp/tutorials/blob/master/spring-security-modules/spring-security-core/src/main/java/com/baeldung/jwtsignkey/userservice/UserDetailsImpl.java">eugenp GitHub user</a>
- * and modified for the purpose of this application.
+ * This code was taken from
+ * <a href="https://github.com/eugenp/tutorials/blob/master/spring-security-modules/spring-security-core/src/main/java/com/baeldung/jwtsignkey/userservice/UserDetailsImpl.java">eugenp</a>
+ * on GitHub and modified for the purpose of this application.
+ * <p>
+ * This class implements the UserDetails interface and is used by Spring Security to represent the user details
  */
 public class UserDetailsImpl implements UserDetails {
     @Serial
@@ -27,19 +32,23 @@ public class UserDetailsImpl implements UserDetails {
     @JsonIgnore
     private final String password;
 
-    public UserDetailsImpl(UUID id, String email, String password) {
+    private final List<GrantedAuthority> authorities;
+
+    public UserDetailsImpl(UUID id, String email, String password, List<GrantedAuthority> authorities) {
         this.id = id;
         this.email = email;
         this.password = password;
+        this.authorities = authorities;
     }
 
     public static UserDetailsImpl build(User user) {
-        return new UserDetailsImpl(user.getId(), user.getEmail(), user.getPassword());
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().toString()));
+        return new UserDetailsImpl(user.getId(), user.getEmail(), user.getPassword(), authorities);
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return authorities;
     }
 
     @Override

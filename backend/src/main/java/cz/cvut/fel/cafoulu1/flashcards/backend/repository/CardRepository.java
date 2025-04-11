@@ -11,5 +11,5 @@ import java.util.UUID;
  * Repository for cards.
  */
 public interface CardRepository extends JpaRepository<Card, UUID> {
-    List<Card> findByCardSet(CardSet cardSet);
+    List<Card> findByCardSetOrderByCardOrderAsc(CardSet cardSet);
 }

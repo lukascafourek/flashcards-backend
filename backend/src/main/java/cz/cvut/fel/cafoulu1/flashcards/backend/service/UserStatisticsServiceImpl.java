@@ -22,18 +22,9 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 
     @Transactional
     @Override
-    public BasicUserStatisticsDto getStatistics(UUID userId) {
+    public BasicUserStatisticsDto getUserStatistics(UUID userId) {
         UserStatistics userStatistics = userStatisticsRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User statistics not found"));
         return userStatisticsMapper.toDtoBasic(userStatistics);
-    }
-
-    @Transactional
-    @Override
-    public void incrementWantedStatistic(UUID userId, String statistic) {
-        UserStatistics userStatistics = userStatisticsRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User statistics not found"));
-        userStatisticsMapper.incrementStatistic(userStatistics, statistic);
-        userStatisticsRepository.save(userStatistics);
     }
 }

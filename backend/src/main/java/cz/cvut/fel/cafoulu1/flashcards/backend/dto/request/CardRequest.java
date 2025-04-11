@@ -4,6 +4,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * DTO for creating or updating or creating a card.
+ */
 @Getter
 @Setter
 public class CardRequest {

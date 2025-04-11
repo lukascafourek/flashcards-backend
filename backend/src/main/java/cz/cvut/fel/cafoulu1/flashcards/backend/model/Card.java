@@ -26,6 +26,9 @@ public class Card {
     @Column(nullable = false, name = "back", columnDefinition = "VARCHAR(510)")
     private String back;
 
+    @Column(nullable = false, name = "card_order")
+    private Integer cardOrder;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "card_set_id")
     @ToString.Exclude

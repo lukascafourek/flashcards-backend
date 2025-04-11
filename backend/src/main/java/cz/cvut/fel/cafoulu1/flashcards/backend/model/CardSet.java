@@ -36,12 +36,16 @@ public class CardSet {
     @Column(nullable = false, name = "creation_date")
     private LocalDate creationDate;
 
+    @Column(nullable = false, name = "privacy", columnDefinition = "boolean default true")
+    private Boolean privacy = true;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "user_id")
     @ToString.Exclude
     private User user;
 
     @OneToMany(mappedBy = "cardSet", fetch = FetchType.LAZY)
+    @OrderColumn(name = "card_order")
     @ToString.Exclude
     private List<Card> cards = new ArrayList<>();
 

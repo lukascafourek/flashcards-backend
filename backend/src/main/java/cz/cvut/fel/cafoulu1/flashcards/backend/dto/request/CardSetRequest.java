@@ -4,6 +4,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * DTO for creating or updating or creating a card set.
+ */
 @Getter
 @Setter
 public class CardSetRequest {
@@ -13,5 +16,5 @@ public class CardSetRequest {
     private String description;
     @Size(max = 255)
     private String category;
-    private Boolean favorite;
+    private Boolean privacy;
 }

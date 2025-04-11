@@ -13,9 +13,9 @@ spring:
     ansi:
       enabled: always
   datasource:
-    url: jdbc:postgresql://localhost:5432/flashcards  # Mac 5433, Windows 5432
+    url: jdbc:postgresql://localhost:5432/flashcards
     username: postgres
-    password: postgres  # vzdy nutno zmenit kvuli gitu
+    password: postgres
 #  flyway:
 #    enabled: true
 #    locations: classpath:db/migration

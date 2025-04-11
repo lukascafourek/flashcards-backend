@@ -1,32 +1,51 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.service;
 
+import cz.cvut.fel.cafoulu1.flashcards.backend.dto.UserDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicUserDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.RegisterRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.UpdateUserRequest;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
  * This is a service for handling user requests.
  */
 public interface UserService {
+    /**
+     * Registers a new user.
+     *
+     * @param registerRequest the request containing the details of the user to be registered
+     */
     void registerUser(RegisterRequest registerRequest);
 
+    /**
+     * Updates the details of an existing user.
+     *
+     * @param email             the email of the user to be updated
+     * @param updateUserRequest the request containing the updated details of the user
+     */
     void updateUser(String email, UpdateUserRequest updateUserRequest);
 
-//    void updateEmail(UUID userId, String newEmail);
-//
-//    void updateUsername(UUID userId, String newUsername);
-//
-//    void updatePassword(UUID userId, String newPassword);
-//
-//    void resetPassword(String email, String newPassword);
-
+    /**
+     * Deletes a user.
+     *
+     * @param userId the ID of the user to be deleted
+     */
     void deleteUser(UUID userId);
 
+    /**
+     * Gets the details of a user.
+     *
+     * @param userId the ID of the user to be retrieved
+     * @return the details of the user
+     */
     BasicUserDto findById(UUID userId);
 
-//    boolean existsByEmail(String email);
-//
-//    boolean checkPassword(UUID userId, String password);
+    /**
+     * Gets a list of all users.
+     *
+     * @return a list of all users
+     */
+    List<UserDto> findAll();
 }

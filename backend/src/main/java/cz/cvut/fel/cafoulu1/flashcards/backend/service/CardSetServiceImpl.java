@@ -3,8 +3,11 @@ package cz.cvut.fel.cafoulu1.flashcards.backend.service;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.CardDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.CardSetDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicCardSetDto;
+import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.CardRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.CardSetRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.FilterCardSetsRequest;
+import cz.cvut.fel.cafoulu1.flashcards.backend.dto.response.FullCardInfo;
+import cz.cvut.fel.cafoulu1.flashcards.backend.dto.response.FullCardSetInfo;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.response.CardSetsResponse;
 import cz.cvut.fel.cafoulu1.flashcards.backend.mapper.CardMapper;
 import cz.cvut.fel.cafoulu1.flashcards.backend.mapper.CardSetMapper;
@@ -13,6 +16,7 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.model.*;
 import cz.cvut.fel.cafoulu1.flashcards.backend.repository.*;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.cor.*;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.helper.CardSetDeletionHelper;
+import cz.cvut.fel.cafoulu1.flashcards.backend.service.helper.CardMapperHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -20,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
-import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -54,13 +57,51 @@ public class CardSetServiceImpl implements CardSetService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         CardSet cardSet = cardSetMapper.createCardSet(cardSetRequest);
+        UserStatistics userStatistics = userStatisticsRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User statistics not found"));
+        return saveCardSetRelations(user, cardSet, userStatistics);
+    }
+
+    @Transactional
+    @Override
+    public UUID copyCardSet(UUID cardSetId, UUID userId) {
+        CardSet toCopy = cardSetRepository.findById(cardSetId)
+                .orElseThrow(() -> new IllegalArgumentException("Card set not found"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        if (toCopy.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("User is the creator of the card set");
+        }
+        if (toCopy.getPrivacy()) {
+            throw new IllegalArgumentException("Card set is private");
+        }
+        UserStatistics userStatistics = userStatisticsRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User statistics not found"));
+        CardSetRequest cardSetRequest = cardSetMapper.createCardSetRequest(toCopy);
+        CardSet copiedCardSet = cardSetMapper.createCardSet(cardSetRequest);
+        copiedCardSet.setPrivacy(true);
+        List<Card> copiedCards = toCopy.getCards().stream()
+                .map(card -> {
+                    CardRequest cardRequest = cardMapper.createCardRequest(card);
+                    Card copiedCard = cardMapper.createCard(cardRequest);
+                    copiedCard.setCardSet(copiedCardSet);
+                    return copiedCard;
+                })
+                .toList();
+        copiedCardSet.setCards(copiedCards);
+        userStatistics.setCardsCreated(userStatistics.getCardsCreated() + copiedCards.size());
+        UUID copiedCardSetId = saveCardSetRelations(user, copiedCardSet, userStatistics);
+        cardRepository.saveAll(copiedCardSet.getCards());
+        return copiedCardSetId;
+    }
+
+    @Transactional
+    protected UUID saveCardSetRelations(User user, CardSet cardSet, UserStatistics userStatistics) {
         cardSet.setCreationDate(LocalDate.now());
         cardSet.setUser(user);
         SetStatistics setStatistics = new SetStatistics();
         setStatistics.setCardSet(cardSet);
         setStatistics.setUser(user);
-        UserStatistics userStatistics = userStatisticsRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User statistics not found"));
         userStatistics.setSetsCreated(userStatistics.getSetsCreated() + 1);
         userStatisticsRepository.save(userStatistics);
         cardSet.getSetStatistics().add(setStatistics);
@@ -77,23 +118,30 @@ public class CardSetServiceImpl implements CardSetService {
     public void updateCardSet(UUID cardSetId, CardSetRequest cardSetRequest, UUID userId) {
         CardSet cardSet = cardSetRepository.findById(cardSetId)
                 .orElseThrow(() -> new IllegalArgumentException("Card set not found"));
-        if (!cardSet.getUser().getId().equals(userId)) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        if (!cardSet.getUser().getId().equals(userId) && !user.getRole().equals(Role.ADMIN)) {
             throw new IllegalArgumentException("User is not the creator of the card set");
         }
         CardSet updatedCardSet = cardSetMapper.partialUpdateCardSet(cardSetRequest, cardSet);
-        Boolean isFavorite = cardSetRequest.getFavorite();
-        if (isFavorite != null) {
-            User user = updatedCardSet.getUser();
-            if (isFavorite && !user.getFavoriteSets().contains(updatedCardSet)) {
-                user.getFavoriteSets().add(updatedCardSet);
-                updatedCardSet.getFavoriteUsers().add(user);
-            } else if (!isFavorite && user.getFavoriteSets().contains(updatedCardSet)) {
-                user.getFavoriteSets().remove(updatedCardSet);
-                updatedCardSet.getFavoriteUsers().remove(user);
-            }
-            userRepository.save(user);
-        }
         cardSetRepository.save(updatedCardSet);
+    }
+
+    @Transactional
+    @Override
+    public void updateFavoriteCardSet(UUID cardSetId, Boolean isFavorite, UUID userId) {
+        CardSet cardSet = cardSetRepository.findById(cardSetId)
+                .orElseThrow(() -> new IllegalArgumentException("Card set not found"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        if (isFavorite != null && isFavorite && !user.getFavoriteSets().contains(cardSet)) {
+            user.getFavoriteSets().add(cardSet);
+            cardSet.getFavoriteUsers().add(user);
+        } else if (isFavorite != null && !isFavorite && user.getFavoriteSets().contains(cardSet)) {
+            user.getFavoriteSets().remove(cardSet);
+            cardSet.getFavoriteUsers().remove(user);
+        }
+        userRepository.save(user);
     }
 
     @Transactional
@@ -101,24 +149,34 @@ public class CardSetServiceImpl implements CardSetService {
     public CardSetDto getCardSet(UUID cardSetId, UUID userId) {
         CardSet cardSet = cardSetRepository.findById(cardSetId)
                 .orElseThrow(() -> new IllegalArgumentException("Card set not found"));
-        SetStatistics setStatistics = setStatisticsRepository.findByCardSetIdAndUserId(cardSetId, cardSet.getUser().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Set statistics not found"));
-        List<CardDto> cards = cardSet.getCards().stream().map(card -> {
-            CardDto cardDto = cardMapper.toDto(card);
-            pictureRepository.findById(card.getId()).ifPresent(picture -> {
-                String encodedPicture = Base64.getEncoder().encodeToString(picture.getPicture());
-                cardDto.setPicture(encodedPicture);
-            });
-            return cardDto;
-        }).toList();
+        if (cardSet.getPrivacy() && !cardSet.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("Card set is private");
+        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        SetStatistics setStatistics = setStatisticsRepository.findByCardSetIdAndUserId(cardSetId, userId)
+                .orElseGet(() -> {
+                    SetStatistics newSetStatistics = new SetStatistics();
+                    newSetStatistics.setCardSet(cardSet);
+                    newSetStatistics.setUser(user);
+                    return setStatisticsRepository.save(newSetStatistics);
+                });
+        cardSet.getSetStatistics().add(setStatistics);
+        cardSetRepository.save(cardSet);
+        user.getSetStatistics().add(setStatistics);
+        userRepository.save(user);
+        List<CardDto> cards = cardSet.getCards().stream()
+                .map(card -> CardMapperHelper.getInstance().mapCardToDto(card, cardMapper, pictureRepository))
+                .toList();
         CardSetDto dto = new CardSetDto();
         BasicCardSetDto basicCardSetDto = cardSetMapper.toDtoBasic(cardSet);
         basicCardSetDto.setCreator(cardSet.getUser().getUsername());
         dto.setBasicCardSetDto(basicCardSetDto);
         dto.setSetStatistics(setStatisticsMapper.toDtoBasic(setStatistics));
         dto.setCards(List.copyOf(cards));
-        dto.setFavorite(cardSet.getFavoriteUsers().contains(cardSet.getUser()));
+        dto.setFavorite(cardSet.getFavoriteUsers().contains(user));
         dto.setCreator(cardSet.getUser().getId().equals(userId));
+        dto.setPrivacy(cardSet.getPrivacy());
         dto.setCategories(List.of(Category.values()));
         dto.setDescription(cardSet.getDescription());
         return dto;
@@ -132,7 +190,8 @@ public class CardSetServiceImpl implements CardSetService {
                 new SearchFilter(),
                 new CategoryFilter(),
                 new FavoriteFilter(),
-                new CreatorFilter()
+                new CreatorFilter(),
+                new PublicOrOwnedFilter()
         );
         for (CardSetFilter filter : filters) {
             spec = filter.apply(filterCardSetsRequest, spec);
@@ -158,11 +217,33 @@ public class CardSetServiceImpl implements CardSetService {
 
     @Transactional
     @Override
+    public List<FullCardSetInfo> getAllCardSets() {
+        return cardSetRepository.findAll().stream()
+                .map(cardSet -> {
+                    FullCardSetInfo fullCardSetInfo = cardSetMapper.toFullDto(cardSet);
+                    fullCardSetInfo.setUserId(cardSet.getUser().getId());
+                    return fullCardSetInfo;
+                })
+                .toList();
+    }
+
+    @Transactional
+    @Override
+    public List<FullCardInfo> getAllCards() {
+        return cardRepository.findAll().stream()
+                .map(card -> CardMapperHelper.getInstance().mapCardToFullInfo(card, cardMapper, pictureRepository))
+                .toList();
+    }
+
+    @Transactional
+    @Override
     public void deleteCardSet(UUID cardSetId, UUID userId) {
         CardSet cardSet = cardSetRepository.findById(cardSetId)
                 .orElseThrow(() -> new IllegalArgumentException("Card set not found"));
         User creator = cardSet.getUser();
-        if (!creator.getId().equals(userId)) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        if (!creator.getId().equals(userId) && !user.getRole().equals(Role.ADMIN)) {
             throw new IllegalArgumentException("User is not the creator of the card set");
         }
         CardSetDeletionHelper.getInstance()
@@ -170,5 +251,30 @@ public class CardSetServiceImpl implements CardSetService {
         creator.getCardSets().remove(cardSet);
         userRepository.save(creator);
         cardSetRepository.delete(cardSet);
+    }
+
+    @Transactional
+    @Override
+    public void updateOrderOfCards(UUID cardSetId, List<CardDto> cardDtos, UUID userId) {
+        CardSet cardSet = cardSetRepository.findById(cardSetId)
+                .orElseThrow(() -> new IllegalArgumentException("Card set not found"));
+        if (!cardSet.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("User is not the creator of the card set");
+        }
+        if (cardDtos.size() != cardSet.getCards().size()) {
+            throw new IllegalArgumentException("Card list size does not match");
+        }
+        List<Card> reorderedCards = cardDtos.stream()
+                .map(cardDto -> cardSet.getCards().stream()
+                        .filter(card -> card.getId().equals(cardDto.getId()))
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalArgumentException("Card ID does not match")))
+                .toList();
+        cardSet.getCards().clear();
+        for (Card card : reorderedCards) {
+            card.setCardSet(cardSet);
+            cardSet.getCards().add(card);
+        }
+        cardSetRepository.save(cardSet);
     }
 }

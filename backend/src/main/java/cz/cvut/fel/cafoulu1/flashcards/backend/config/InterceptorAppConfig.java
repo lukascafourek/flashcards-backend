@@ -7,7 +7,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * Configuration for interceptors.
+ * Configuration for logger interceptors.
  */
 @Component
 public class InterceptorAppConfig implements WebMvcConfigurer {
@@ -20,6 +20,8 @@ public class InterceptorAppConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(loggerInterceptor).addPathPatterns("/**");
+        registry.addInterceptor(loggerInterceptor)
+                .addPathPatterns("/**")
+                .excludePathPatterns("/health", "/static/**", "/favicon.ico");
     }
 }

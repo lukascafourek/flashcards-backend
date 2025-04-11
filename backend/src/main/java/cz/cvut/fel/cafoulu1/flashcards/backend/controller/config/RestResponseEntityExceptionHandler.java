@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 /**
- * Exception handler for REST controllers.
+ * Exception handler for REST controllers to handle custom exceptions.
  */
 @ControllerAdvice
 @Log4j2

@@ -12,11 +12,11 @@ import java.util.Map;
 /**
  * This class represents a custom OAuth2 user.
  */
-public class CustomOAuth2User implements OAuth2User {
+public class OAuth2UserImpl implements OAuth2User {
     private final BasicUserDto user;
     private final Map<String, Object> attributes;
 
-    public CustomOAuth2User(BasicUserDto user, Map<String, Object> attributes) {
+    public OAuth2UserImpl(BasicUserDto user, Map<String, Object> attributes) {
         this.user = user;
         this.attributes = attributes;
     }

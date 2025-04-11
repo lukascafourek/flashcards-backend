@@ -18,6 +18,7 @@ public class CardSetDto implements Serializable {
     List<CardDto> cards;
     Boolean favorite;
     Boolean creator;
+    Boolean privacy;
     List<Category> categories;
     String description;
 }
