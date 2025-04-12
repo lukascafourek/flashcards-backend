@@ -31,7 +31,7 @@ public class JwtUtils {
     private static final Logger logger = LogManager.getLogger(JwtUtils.class);
 
     public String generateJwtToken(Authentication authentication) {
-        int jwtExpirationMs = 1000 * 60 * 60 * 24;
+        int jwtExpirationMs = 1000 * 60 * 60 * 24 * 7;
         String subject = null;
         if (authentication.getPrincipal() instanceof UserDetailsImpl userDetails) {
             subject = userDetails.getUsername();

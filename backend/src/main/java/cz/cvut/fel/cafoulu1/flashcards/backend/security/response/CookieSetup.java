@@ -23,7 +23,7 @@ public class CookieSetup {
                 .secure(false)
                 .path("/")
 //                .domain("localhost")
-                .maxAge(Duration.ofDays(1))
+                .maxAge(Duration.ofDays(7))
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
         Object principal = authentication.getPrincipal();
@@ -35,7 +35,7 @@ public class CookieSetup {
                 .httpOnly(true)
                 .secure(false) // Nastav na `true`, pokud jedeš přes HTTPS!
                 .path("/")
-                .maxAge(Duration.ofDays(1))
+                .maxAge(Duration.ofDays(7))
 //                .domain("localhost")
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, adminCookie.toString());
