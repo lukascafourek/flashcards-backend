@@ -48,6 +48,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 System.out.println("Authorization header: " + authorizationHeader);
                 System.out.println("JWT token: " + jwt);
             }
+            System.out.println(jwt);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String email = jwtUtils.getEmailFromJwtToken(jwt);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
