@@ -1,6 +1,8 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.security.jwtconfig;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.userdetails.UserDetailsServiceImpl;
 import jakarta.servlet.http.Cookie;
@@ -40,27 +42,18 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             String jwt = null;
-            Cookie[] cookies = request.getCookies();
-            if (cookies != null) {
-                for (Cookie cookie : cookies) {
-                    System.out.println("Cookie name: " + cookie.getName() + ", value: " + cookie.getValue());
-                    if (cookie.getName().equals("jwt") && cookie.getValue() != null) {
-                        jwt = cookie.getValue();
-                        break;
-                    }
-                }
+            String authorizationHeader = request.getHeader("Authorization");
+            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+                jwt = authorizationHeader.substring(7);
+                System.out.println("Authorization header: " + authorizationHeader);
+                System.out.println("JWT token: " + jwt);
             }
-            System.out.println("JWT: " + jwt);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String email = jwtUtils.getEmailFromJwtToken(jwt);
-                System.out.println("Email: " + email);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-                System.out.println("UserDetails: " + userDetails);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-            } else {
-                logger.warn("Cannot set user authentication: JWT token is invalid or not present");
             }
         } catch (Exception e) {
             logger.error("Cannot set user authentication: {}", e.getMessage());
