@@ -26,5 +26,3 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: false
     show-sql: true
-logging:
-  config: src/main/resources/log4j2.properties
