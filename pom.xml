@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>cz.cvut.fel.cafoulu1.flashcards</groupId>
-    <artifactId>backend</artifactId>
+    <artifactId>flashcards-backend</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <name>backend</name>
+    <name>flashcards-backend</name>
     <description>flashcards-backend</description>
     <url/>
     <licenses>
