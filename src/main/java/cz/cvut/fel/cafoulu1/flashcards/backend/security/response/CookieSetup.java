@@ -26,7 +26,6 @@ public class CookieSetup {
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .domain(frontendUrl)
                 .maxAge(Duration.ofDays(7))
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
@@ -40,7 +39,6 @@ public class CookieSetup {
                 .secure(true)
                 .path("/")
                 .maxAge(Duration.ofDays(7))
-                .domain(frontendUrl)
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, adminCookie.toString());
     }
@@ -50,7 +48,6 @@ public class CookieSetup {
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .domain(frontendUrl)
                 .maxAge(0)
                 .sameSite("Lax")
                 .build();
@@ -60,7 +57,6 @@ public class CookieSetup {
                 .secure(true)
                 .path("/")
                 .maxAge(0)
-                .domain(frontendUrl)
                 .sameSite("Lax")
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, adminCookie.toString());
