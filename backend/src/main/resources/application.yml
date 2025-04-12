@@ -13,12 +13,12 @@ spring:
     ansi:
       enabled: always
   datasource:
-    url: jdbc:postgresql://localhost:5432/flashcards
-    username: postgres
-    password: 1/Popokatepetl
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate.format_sql: true
       hibernate:

@@ -4,6 +4,7 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.security.jwtconfig.JwtUtils;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.oauth2.OAuth2UserImpl;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.userdetails.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
@@ -15,14 +16,17 @@ import java.time.Duration;
  * This class is used for setting cookies in the response.
  */
 public class CookieSetup {
+    @Value("${frontend.url}")
+    private static String frontendUrl;
+
     public static void setCookies(HttpServletResponse response, Authentication authentication, JwtUtils jwtUtils) {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
         ResponseCookie jwtCookie = ResponseCookie.from("jwt", jwt)
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .path("/")
-//                .domain("localhost")
+                .domain(frontendUrl)
                 .maxAge(Duration.ofDays(7))
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
@@ -33,10 +37,10 @@ public class CookieSetup {
                         (principal instanceof OAuth2UserImpl && ((OAuth2UserImpl) principal).getAuthorities().stream()
                                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN")))))
                 .httpOnly(true)
-                .secure(false) // Nastav na `true`, pokud jedeš přes HTTPS!
+                .secure(true)
                 .path("/")
                 .maxAge(Duration.ofDays(7))
-//                .domain("localhost")
+                .domain(frontendUrl)
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, adminCookie.toString());
     }
@@ -44,19 +48,19 @@ public class CookieSetup {
     public static void unsetCookies(HttpServletResponse response) {
         ResponseCookie jwtCookie = ResponseCookie.from("jwt", "")
                 .httpOnly(true)
-                .secure(false)  // Nastav na true, pokud používáš HTTPS
+                .secure(true)
                 .path("/")
-//                .domain("localhost")
+                .domain(frontendUrl)
                 .maxAge(0)
                 .sameSite("Lax")
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
         ResponseCookie adminCookie = ResponseCookie.from("isAdmin", "")
                 .httpOnly(true)
-                .secure(false)  // Nastav na true, pokud používáš HTTPS
+                .secure(true)
                 .path("/")
                 .maxAge(0)
-//                .domain("localhost")
+                .domain(frontendUrl)
                 .sameSite("Lax")
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, adminCookie.toString());
