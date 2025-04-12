@@ -39,6 +39,11 @@ public class CookieSetup {
                 .maxAge(Duration.ofDays(7))
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, adminCookie.toString());
+        System.out.println("JWT: " + jwt);
+        System.out.println("isAdmin: " + adminCookie.getValue());
+        System.out.println("JWT cookie: " + jwtCookie);
+        System.out.println("isAdmin cookie: " + adminCookie);
+        System.out.println(response.getHeader(HttpHeaders.SET_COOKIE));
     }
 
     public static void unsetCookies(HttpServletResponse response) {
@@ -58,5 +63,8 @@ public class CookieSetup {
                 .sameSite("Lax")
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, adminCookie.toString());
+        System.out.println("JWT cookie: " + jwtCookie);
+        System.out.println("isAdmin cookie: " + adminCookie);
+        System.out.println(response.getHeader(HttpHeaders.SET_COOKIE));
     }
 }
