@@ -4,7 +4,6 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.security.jwtconfig.JwtUtils;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.oauth2.OAuth2UserImpl;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.userdetails.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
@@ -16,9 +15,6 @@ import java.time.Duration;
  * This class is used for setting cookies in the response.
  */
 public class CookieSetup {
-    @Value("${frontend.url}")
-    private static String frontendUrl;
-
     public static void setCookies(HttpServletResponse response, Authentication authentication, JwtUtils jwtUtils) {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
@@ -26,6 +22,7 @@ public class CookieSetup {
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
+                .sameSite("None")
                 .maxAge(Duration.ofDays(7))
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
@@ -38,6 +35,7 @@ public class CookieSetup {
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
+                .sameSite("None")
                 .maxAge(Duration.ofDays(7))
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, adminCookie.toString());

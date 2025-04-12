@@ -7,7 +7,6 @@ import jakarta.servlet.http.Cookie;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,9 +34,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
-    @Value("${frontend.url}")
-    private String frontendUrl;
-
     private static final Logger logger = LogManager.getLogger(AuthTokenFilter.class);
 
     @Override
@@ -47,7 +43,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             Cookie[] cookies = request.getCookies();
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
-                    if (cookie.getName().equals("jwt")) {
+                    if (cookie.getName().equals("jwt") && cookie.getValue() != null) {
                         jwt = cookie.getValue();
                         break;
                     }
