@@ -27,6 +27,12 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
         CookieSetup.setCookies(response, authentication, jwtUtils);
-        response.sendRedirect(frontendUrl + "/collections");
+        String authorization = response.getHeader("Authorization");
+        String jwt = authorization.substring(7);
+        String isAdmin = response.getHeader("X-Is-Admin");
+        String redirectUrl = frontendUrl + "/auth/redirect" +
+                "?token=" + jwt +
+                "&isAdmin=" + isAdmin;
+        response.sendRedirect(redirectUrl);
     }
 }
