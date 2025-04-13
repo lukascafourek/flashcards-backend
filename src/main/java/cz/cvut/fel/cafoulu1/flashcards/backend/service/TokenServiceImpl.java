@@ -59,7 +59,7 @@ public class TokenServiceImpl implements TokenService {
         tokenRepository.deleteById(user.getId());
     }
 
-    @Scheduled(fixedRate = 900000)
+    @Scheduled(fixedRate = 1000 * 60 * 60 * 24)
     public void deleteExpiredTokens() {
         tokenRepository.deleteAllByExpirationDateBefore(LocalDateTime.now());
     }
