@@ -79,15 +79,35 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Email is already in use.");
         }
         if (updateUserRequest.getUsername() != null && !updateUserRequest.getUsername().isEmpty()) {
+            if (updateUserRequest.getUsername().length() < 3) {
+                throw new IllegalArgumentException("Username must be at least 3 characters long.");
+            }
             user.setUsername(updateUserRequest.getUsername());
         }
         if (updateUserRequest.getEmail() != null && !updateUserRequest.getEmail().isEmpty()) {
             user.setEmail(updateUserRequest.getEmail());
         }
         if (updateUserRequest.getPassword() != null && !updateUserRequest.getPassword().isEmpty()) {
+            if (updateUserRequest.getPassword().length() < 8) {
+                throw new IllegalArgumentException("Password must be at least 8 characters long.");
+            }
             user.setPassword(passwordEncoder.encode(updateUserRequest.getPassword()));
         }
         userRepository.save(user);
+    }
+
+    @Transactional
+    @Override
+    public void resetPassword(String email, String newPassword) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        if (newPassword != null && !newPassword.isEmpty()) {
+            if (newPassword.length() < 8) {
+                throw new IllegalArgumentException("Password must be at least 8 characters long.");
+            }
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+        }
     }
 
     @Transactional

@@ -85,6 +85,7 @@ public class CardSetServiceImpl implements CardSetService {
                     CardRequest cardRequest = cardMapper.createCardRequest(card);
                     Card copiedCard = cardMapper.createCard(cardRequest);
                     copiedCard.setCardSet(copiedCardSet);
+                    copiedCard.setCardOrder(card.getCardOrder());
                     return copiedCard;
                 })
                 .toList();

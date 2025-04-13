@@ -28,6 +28,14 @@ public interface UserService {
     void updateUser(String email, UpdateUserRequest updateUserRequest);
 
     /**
+     * Resets the password of a user.
+     *
+     * @param email    the email of the user whose password is to be reset
+     * @param password the new password
+     */
+    void resetPassword(String email, String password);
+
+    /**
      * Deletes a user.
      *
      * @param userId the ID of the user to be deleted

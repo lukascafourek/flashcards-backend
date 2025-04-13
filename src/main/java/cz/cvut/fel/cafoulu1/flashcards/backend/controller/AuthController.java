@@ -154,9 +154,7 @@ public class AuthController {
     @PatchMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestParam @Size(max = 255) String email, @RequestParam @Size(max = 255) String password) {
         try {
-            UpdateUserRequest updateUserRequest = new UpdateUserRequest();
-            updateUserRequest.setPassword(password);
-            userService.updateUser(email, updateUserRequest);
+            userService.resetPassword(email, password);
             return ResponseEntity.ok("Password reset successfully.");
         } catch (Exception e) {
             logger.error("Error during password reset: {}", e.getMessage());
