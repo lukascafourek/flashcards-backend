@@ -37,7 +37,7 @@ public class CardServiceImpl implements CardService {
 
     private static final int MAX_IMAGE_SIZE = 1024 * 1024;
 
-    private static final int MAX_IMAGE_COUNT_PER_USER = 1;
+    private static final int MAX_IMAGE_COUNT_PER_USER = 4;
 
     @Transactional
     @Override
