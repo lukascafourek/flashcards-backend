@@ -8,7 +8,7 @@ spring:
             client-secret: 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
             scope: profile, email
   profiles:
-    active: dev
+    active: prod
   output:
     ansi:
       enabled: always
