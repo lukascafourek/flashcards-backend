@@ -256,12 +256,12 @@ public class AuthControllerTest {
         String email = "email@example.com";
         String password = "newPassword";
 
-        doNothing().when(userService).updateUser(eq(email), any(UpdateUserRequest.class));
+        doNothing().when(userService).resetPassword(eq(email), eq(password));
 
         ResponseEntity<?> response = authController.resetPassword(email, password);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(userService).updateUser(eq(email), any(UpdateUserRequest.class));
+        verify(userService).resetPassword(eq(email), eq(password));
     }
 
     @Test
@@ -269,12 +269,12 @@ public class AuthControllerTest {
         String email = "email@example.com";
         String password = "newPassword";
 
-        doThrow(new RuntimeException("Testing error")).when(userService).updateUser(eq(email), any(UpdateUserRequest.class));
+        doThrow(new RuntimeException("Testing error")).when(userService).resetPassword(eq(email), eq(password));
 
         ResponseEntity<?> response = authController.resetPassword(email, password);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Testing error", response.getBody());
-        verify(userService).updateUser(eq(email), any(UpdateUserRequest.class));
+        verify(userService).resetPassword(eq(email), eq(password));
     }
 }

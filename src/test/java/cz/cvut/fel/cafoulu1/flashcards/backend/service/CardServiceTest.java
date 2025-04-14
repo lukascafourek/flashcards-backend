@@ -130,7 +130,7 @@ public class CardServiceTest {
         CardRequest cardRequest = new CardRequest();
         cardRequest.setPicture(Base64.getEncoder().encodeToString(new byte[10]));
         user.setId(userId);
-        user.setNumberOfImages(1);
+        user.setNumberOfImages(4);
         cardSet.setUser(user);
         cardSet.setCards(new ArrayList<>());
         Card card = new Card();

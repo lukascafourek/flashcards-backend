@@ -107,6 +107,27 @@ class UserServiceTest {
     }
 
     @Test
+    void resetPassword_shouldUpdatePasswordWhenValid() {
+        User user = new User();
+        user.setPassword("oldEncodedPassword");
+
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
+        when(passwordEncoder.encode("newValidPassword")).thenReturn("newEncodedPassword");
+
+        userService.resetPassword("user@example.com", "newValidPassword");
+
+        assertEquals("newEncodedPassword", user.getPassword());
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void resetPassword_shouldThrowIfUserNotFound() {
+        when(userRepository.findByEmail("nonexistent@example.com")).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> userService.resetPassword("nonexistent@example.com", "newPassword"));
+    }
+    
+    @Test
     void deleteUser_shouldRemoveUserAndRelatedData() {
         UUID userId = UUID.randomUUID();
         User user = new User();
