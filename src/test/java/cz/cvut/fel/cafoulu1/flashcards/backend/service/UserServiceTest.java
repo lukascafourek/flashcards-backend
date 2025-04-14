@@ -126,7 +126,7 @@ class UserServiceTest {
 
         assertThrows(IllegalArgumentException.class, () -> userService.resetPassword("nonexistent@example.com", "newPassword"));
     }
-    
+
     @Test
     void deleteUser_shouldRemoveUserAndRelatedData() {
         UUID userId = UUID.randomUUID();

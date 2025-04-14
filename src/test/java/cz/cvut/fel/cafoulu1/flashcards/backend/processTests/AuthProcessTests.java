@@ -91,8 +91,8 @@ public class AuthProcessTests {
         var loginResult = authController.loginUser(loginRequest, loginResponse);
         assertThat(loginResult.getStatusCode().is2xxSuccessful()).isTrue();
 
-        String jwtCookie = loginResponse.getHeader("Set-Cookie");
-        assertThat(jwtCookie).contains("jwt=");
+        String jwtCookie = loginResponse.getHeader("Authorization");
+        assertThat(jwtCookie).contains("Bearer ");
 
         String jwtToken = extractTokenFromCookie(jwtCookie);
         assertThat(jwtToken).isNotBlank();
@@ -117,8 +117,8 @@ public class AuthProcessTests {
         MockHttpServletResponse logoutResponse = new MockHttpServletResponse();
         var logoutResult = authController.logoutUser(logoutResponse);
         assertThat(logoutResult.getStatusCode().is2xxSuccessful()).isTrue();
-        List<String> cookies = logoutResponse.getHeaders("Set-Cookie");
-        assertThat(cookies).anyMatch(c -> c.startsWith("jwt=;"));
+        List<String> cookies = logoutResponse.getHeaders("Authorization");
+        assertThat(cookies).isEmpty();
     }
 
     @Test
@@ -154,8 +154,8 @@ public class AuthProcessTests {
 
     private String extractTokenFromCookie(String cookieHeader) {
         for (String cookie : cookieHeader.split(";")) {
-            if (cookie.trim().startsWith("jwt=")) {
-                return cookie.trim().substring("jwt=".length());
+            if (cookie.trim().startsWith("Bearer ")) {
+                return cookie.trim().substring("Bearer ".length());
             }
         }
         return null;

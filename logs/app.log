@@ -74,3 +74,63 @@
 2025-04-12 16:46:44.842 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.FlashcardsBackendApplication.logStarting - Starting FlashcardsBackendApplication v1.0.0-SNAPSHOT using Java 21.0.4 with PID 19252 (C:\Users\lukas\OneDrive\Dokumenty\CVUT\BP\flashcards-backend\target\flashcards-backend-1.0.0-SNAPSHOT.jar started by lukas in C:\Users\lukas\OneDrive\Dokumenty\CVUT\BP\flashcards-backend)
 2025-04-12 16:46:44.845 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.FlashcardsBackendApplication.logStartupProfileInfo - The following 1 profile is active: "dev"
 2025-04-12 16:46:50.824 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.FlashcardsBackendApplication.logStarted - Started FlashcardsBackendApplication in 6.26 seconds (process running for 6.881)
+2025-04-14 20:52:16.870 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.FlashcardsBackendApplicationTests.logStarting - Starting FlashcardsBackendApplicationTests using Java 21.0.2 with PID 2584 (started by lukascafourek in /Users/lukascafourek/Documents/6/BP/flashcards-backend)
+2025-04-14 20:52:16.872 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.FlashcardsBackendApplicationTests.logStartupProfileInfo - The following 1 profile is active: "prod"
+2025-04-14 20:52:23.372 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.FlashcardsBackendApplicationTests.logStarted - Started FlashcardsBackendApplicationTests in 6.683 seconds (process running for 7.454)
+2025-04-14 20:52:33.720 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.AuthController.deleteAccount - Error during deleting account: Testing error
+2025-04-14 20:52:33.727 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.AuthController.loginUser - Error during user login: Testing error
+2025-04-14 20:52:33.732 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.AuthController.getAllUsers - Error during fetching all users: Testing error
+2025-04-14 20:52:33.734 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.AuthController.updateUser - Error during updating user: Testing error
+2025-04-14 20:52:33.737 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.AuthController.deleteAccountByAdmin - Error during deleting account by admin: Testing error
+2025-04-14 20:52:33.743 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.AuthController.resetPassword - Error during password reset: Testing error
+2025-04-14 20:52:33.745 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.AuthController.updateUserByAdmin - Error during updating user by admin: Testing error
+2025-04-14 20:52:33.750 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.AuthController.getCurrentUser - Error during fetching current user: Testing error
+2025-04-14 20:52:33.753 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.AuthController.registerUser - Error during user registration: Testing error
+2025-04-14 20:52:39.611 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.CardController.createCard - Error creating card: Testing error
+2025-04-14 20:52:39.632 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.CardController.updateCard - Error updating card: Testing error
+2025-04-14 20:52:39.638 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.CardController.getCards - Error getting cards: Testing error
+2025-04-14 20:52:39.643 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.CardController.deleteCard - Error deleting card: Testing error
+2025-04-14 20:52:44.758 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.CardSetController.updateCardOrder - Error updating card order: Testing error
+2025-04-14 20:52:44.768 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.CardSetController.getCardSet - Error getting card set: Testing error
+2025-04-14 20:52:44.771 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.CardSetController.deleteCardSet - Error deleting card set: Testing error
+2025-04-14 20:52:44.782 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.CardSetController.getAllCards - Error getting all cards: Testing error
+2025-04-14 20:52:44.792 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.CardSetController.getAllCardSetsWithPagination - Error getting card sets: Testing error
+2025-04-14 20:52:44.795 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.CardSetController.copyCardSet - Error copying card set: Testing error
+2025-04-14 20:52:44.799 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.CardSetController.updateFavoriteCardSet - Error updating favorite card set: Testing error
+2025-04-14 20:52:44.801 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.CardSetController.updateCardOrder - Error updating card order: Cards list is required
+2025-04-14 20:52:44.804 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.CardSetController.updateCardSet - Error updating card set: Testing error
+2025-04-14 20:52:44.814 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.CardSetController.getAllCardSets - Error getting all card sets: Testing error
+2025-04-14 20:52:44.819 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.CardSetController.createCardSet - Error creating card set: Testing error
+2025-04-14 20:52:50.035 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.SetStatisticsController.incrementSetStatistics - Error incrementing set statistics: Testing error
+2025-04-14 20:52:55.328 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.TokenController.sendToken - Error sending token: Testing error
+2025-04-14 20:52:55.354 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.TokenController.sendToken - Error sending token: Email is required (max 255 characters)
+2025-04-14 20:52:55.361 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.TokenController.verifyToken - Error verifying token: Testing error
+2025-04-14 20:53:03.422 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.UserStatisticsController.getUserStatistics - Error while getting user statistics: Testing error
+2025-04-14 20:53:10.907 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.integrationTests.AuthIntegrationTests.logStarting - Starting AuthIntegrationTests using Java 21.0.2 with PID 2669 (started by lukascafourek in /Users/lukascafourek/Documents/6/BP/flashcards-backend)
+2025-04-14 20:53:10.909 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.integrationTests.AuthIntegrationTests.logStartupProfileInfo - The following 1 profile is active: "prod"
+2025-04-14 20:53:17.353 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.integrationTests.AuthIntegrationTests.logStarted - Started AuthIntegrationTests in 6.619 seconds (process running for 7.382)
+2025-04-14 20:53:42.378 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.processTests.AuthProcessTests.logStarting - Starting AuthProcessTests using Java 21.0.2 with PID 2686 (started by lukascafourek in /Users/lukascafourek/Documents/6/BP/flashcards-backend)
+2025-04-14 20:53:42.380 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.processTests.AuthProcessTests.logStartupProfileInfo - The following 1 profile is active: "prod"
+2025-04-14 20:53:48.648 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.processTests.AuthProcessTests.logStarted - Started AuthProcessTests in 6.436 seconds (process running for 7.202)
+2025-04-14 20:57:54.476 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.processTests.AuthProcessTests.logStarting - Starting AuthProcessTests using Java 21.0.2 with PID 2750 (started by lukascafourek in /Users/lukascafourek/Documents/6/BP/flashcards-backend)
+2025-04-14 20:57:54.478 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.processTests.AuthProcessTests.logStartupProfileInfo - The following 1 profile is active: "prod"
+2025-04-14 20:58:01.290 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.processTests.AuthProcessTests.logStarted - Started AuthProcessTests in 6.977 seconds (process running for 7.71)
+2025-04-14 21:00:42.764 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.processTests.AuthProcessTests.logStarting - Starting AuthProcessTests using Java 21.0.2 with PID 2784 (started by lukascafourek in /Users/lukascafourek/Documents/6/BP/flashcards-backend)
+2025-04-14 21:00:42.766 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.processTests.AuthProcessTests.logStartupProfileInfo - The following 1 profile is active: "prod"
+2025-04-14 21:00:50.105 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.processTests.AuthProcessTests.logStarted - Started AuthProcessTests in 7.524 seconds (process running for 8.277)
+2025-04-14 21:01:37.030 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.processTests.AuthProcessTests.logStarting - Starting AuthProcessTests using Java 21.0.2 with PID 2801 (started by lukascafourek in /Users/lukascafourek/Documents/6/BP/flashcards-backend)
+2025-04-14 21:01:37.032 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.processTests.AuthProcessTests.logStartupProfileInfo - The following 1 profile is active: "prod"
+2025-04-14 21:01:44.344 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.processTests.AuthProcessTests.logStarted - Started AuthProcessTests in 7.496 seconds (process running for 8.214)
+2025-04-14 21:01:44.622 [main] [ERROR] cz.cvut.fel.cafoulu1.flashcards.backend.controller.AuthController.registerUser - Error during user registration: Email is already in use.
+2025-04-14 21:04:04.741 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.processTests.AuthProcessTests.logStarting - Starting AuthProcessTests using Java 21.0.2 with PID 2840 (started by lukascafourek in /Users/lukascafourek/Documents/6/BP/flashcards-backend)
+2025-04-14 21:04:04.743 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.processTests.AuthProcessTests.logStartupProfileInfo - The following 1 profile is active: "prod"
+2025-04-14 21:04:11.795 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.processTests.AuthProcessTests.logStarted - Started AuthProcessTests in 7.251 seconds (process running for 7.997)
+2025-04-14 21:04:20.509 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.processTests.AuthProcessTests.logStarting - Starting AuthProcessTests using Java 21.0.2 with PID 2854 (started by lukascafourek in /Users/lukascafourek/Documents/6/BP/flashcards-backend)
+2025-04-14 21:04:20.510 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.processTests.AuthProcessTests.logStartupProfileInfo - The following 1 profile is active: "prod"
+2025-04-14 21:04:26.853 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.processTests.AuthProcessTests.logStarted - Started AuthProcessTests in 6.51 seconds (process running for 7.281)
+2025-04-14 21:05:00.023 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.processTests.AuthProcessTests.logStarting - Starting AuthProcessTests using Java 21.0.2 with PID 2865 (started by lukascafourek in /Users/lukascafourek/Documents/6/BP/flashcards-backend)
+2025-04-14 21:05:00.025 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.processTests.AuthProcessTests.logStartupProfileInfo - The following 1 profile is active: "prod"
+2025-04-14 21:05:06.915 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.processTests.AuthProcessTests.logStarted - Started AuthProcessTests in 7.069 seconds (process running for 7.83)
+2025-04-14 21:05:28.639 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.integrationTests.AuthIntegrationTests.logStarting - Starting AuthIntegrationTests using Java 21.0.2 with PID 2880 (started by lukascafourek in /Users/lukascafourek/Documents/6/BP/flashcards-backend)
+2025-04-14 21:05:28.641 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.integrationTests.AuthIntegrationTests.logStartupProfileInfo - The following 1 profile is active: "prod"
+2025-04-14 21:05:35.406 [main] [INFO ] cz.cvut.fel.cafoulu1.flashcards.backend.integrationTests.AuthIntegrationTests.logStarted - Started AuthIntegrationTests in 6.931 seconds (process running for 7.714)
