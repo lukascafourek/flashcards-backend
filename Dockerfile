@@ -8,6 +8,8 @@ RUN mvn dependency:go-offline -B
 
 COPY . .
 
+RUN mvn test
+
 RUN mvn clean package -DskipTests
 
 FROM eclipse-temurin:21-jre
