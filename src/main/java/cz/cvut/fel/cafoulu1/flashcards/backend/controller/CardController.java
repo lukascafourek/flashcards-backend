@@ -3,6 +3,7 @@ package cz.cvut.fel.cafoulu1.flashcards.backend.controller;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.CardRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.CardServiceImpl;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.userdetails.UserDetailsImpl;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -27,6 +28,7 @@ public class CardController {
 
     @PostMapping("/create")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Create a new card")
     public ResponseEntity<?> createCard(
             @PathVariable("set_id") UUID setId,
             @Valid @RequestBody CardRequest cardRequest,
@@ -42,6 +44,7 @@ public class CardController {
 
     @PatchMapping("/update/{id}")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Update an existing card")
     public ResponseEntity<?> updateCard(
             @PathVariable("set_id") UUID setId,
             @PathVariable("id") UUID id,
@@ -59,6 +62,7 @@ public class CardController {
 
     @GetMapping("/get-cards")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Get all cards in a set")
     public ResponseEntity<?> getCards(@PathVariable("set_id") UUID setId) {
         try {
             return ResponseEntity.ok(cardService.getCards(setId));
@@ -70,6 +74,7 @@ public class CardController {
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Delete a card")
     public ResponseEntity<?> deleteCard(
             @PathVariable("set_id") UUID setId,
             @PathVariable("id") UUID id,

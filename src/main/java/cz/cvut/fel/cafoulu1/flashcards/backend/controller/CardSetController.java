@@ -6,6 +6,7 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.FilterCardSetsRequest
 import cz.cvut.fel.cafoulu1.flashcards.backend.mapper.CardSetMapper;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.CardSetServiceImpl;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.userdetails.UserDetailsImpl;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,7 @@ public class CardSetController {
 
     @PostMapping("/create")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Create a new card set")
     public ResponseEntity<?> createCardSet(@Valid @RequestBody CardSetRequest cardSetRequest, Authentication authentication) {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
@@ -50,6 +52,7 @@ public class CardSetController {
 
     @PostMapping("/copy/{id}")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Copy an existing card set")
     public ResponseEntity<?> copyCardSet(@PathVariable("id") UUID id, Authentication authentication) {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
@@ -62,6 +65,7 @@ public class CardSetController {
 
     @PatchMapping("/update/{id}")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Update an existing card set")
     public ResponseEntity<?> updateCardSet(@PathVariable("id") UUID id, @Valid @RequestBody CardSetRequest cardSetRequest, Authentication authentication) {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
@@ -75,6 +79,7 @@ public class CardSetController {
 
     @PatchMapping("/update-favorite/{id}")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Update favorite status of a card set")
     public ResponseEntity<?> updateFavoriteCardSet(@PathVariable("id") UUID id, @RequestParam Boolean isFavorite, Authentication authentication) {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
@@ -88,6 +93,7 @@ public class CardSetController {
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Delete a card set")
     public ResponseEntity<?> deleteCardSet(@PathVariable("id") UUID id, Authentication authentication) {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
@@ -101,6 +107,7 @@ public class CardSetController {
 
     @GetMapping("/get/{id}")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Get a card set by ID")
     public ResponseEntity<?> getCardSet(@PathVariable("id") UUID id, Authentication authentication) {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
@@ -113,6 +120,7 @@ public class CardSetController {
 
     @GetMapping("/get-sets")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Get all card sets with pagination and filtering")
     public ResponseEntity<?> getAllCardSetsWithPagination(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size,
@@ -137,6 +145,7 @@ public class CardSetController {
 
     @GetMapping("/get-all")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Get all card sets")
     public ResponseEntity<?> getAllCardSets() {
         try {
             return ResponseEntity.ok(cardSetService.getAllCardSets());
@@ -148,6 +157,7 @@ public class CardSetController {
 
     @GetMapping("/get-cards")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Get all cards")
     public ResponseEntity<?> getAllCards() {
         try {
             return ResponseEntity.ok(cardSetService.getAllCards());
@@ -159,6 +169,7 @@ public class CardSetController {
 
     @PatchMapping("/{id}/update-card-order")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Update the order of cards in a card set")
     public ResponseEntity<?> updateCardOrder(@PathVariable("id") UUID id, @RequestBody Map<String, List<CardDto>> orderList, Authentication authentication) {
         try {
             List<CardDto> cards = orderList.get("cards");

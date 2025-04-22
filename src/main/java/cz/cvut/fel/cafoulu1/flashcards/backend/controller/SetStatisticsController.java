@@ -2,6 +2,7 @@ package cz.cvut.fel.cafoulu1.flashcards.backend.controller;
 
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.SetStatisticsServiceImpl;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.userdetails.UserDetailsImpl;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,6 +26,7 @@ public class SetStatisticsController {
 
     @PatchMapping("/increment")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Increment wanted set statistics")
     public ResponseEntity<?> incrementSetStatistics(
             @PathVariable("set_id") UUID setId,
             @RequestParam String firstStat,

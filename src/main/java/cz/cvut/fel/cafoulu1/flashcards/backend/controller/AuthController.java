@@ -8,6 +8,7 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.security.response.CookieSetup;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.UserServiceImpl;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.emails.RegistrationEmailImpl;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.userdetails.UserDetailsImpl;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
@@ -41,6 +42,7 @@ public class AuthController {
     private static final Logger logger = LogManager.getLogger(AuthController.class);
 
     @PostMapping("/register")
+    @Operation(summary = "Register a new user")
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
         try {
             userService.registerUser(registerRequest);
@@ -55,6 +57,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @Operation(summary = "Login a user")
     public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
@@ -68,6 +71,7 @@ public class AuthController {
 
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Get current user")
     public ResponseEntity<?> getCurrentUser(Authentication authentication) {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
@@ -80,6 +84,7 @@ public class AuthController {
 
     @GetMapping("/get-all-users")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Get all users")
     public ResponseEntity<?> getAllUsers() {
         try {
             return ResponseEntity.ok(userService.findAll());
@@ -91,6 +96,7 @@ public class AuthController {
 
     @PatchMapping("/update-user")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Update current user")
     public ResponseEntity<String> updateUser(@Valid @RequestBody UpdateUserRequest updateUserRequest, Authentication authentication) {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
@@ -104,6 +110,7 @@ public class AuthController {
 
     @PatchMapping("/update-user/{email}")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Update user by admin")
     public ResponseEntity<String> updateUserByAdmin(@PathVariable("email") String email, @Valid @RequestBody UpdateUserRequest updateUserRequest) {
         try {
             userService.updateUser(email, updateUserRequest);
@@ -116,6 +123,7 @@ public class AuthController {
 
     @DeleteMapping("/delete-account")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Delete current user account")
     public ResponseEntity<String> deleteAccount(Authentication authentication, HttpServletResponse response) {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
@@ -130,6 +138,7 @@ public class AuthController {
 
     @DeleteMapping("/delete-account/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Delete user account by admin")
     public ResponseEntity<String> deleteAccountByAdmin(@PathVariable("userId") UUID userId) {
         try {
             userService.deleteUser(userId);
@@ -141,6 +150,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
+    @Operation(summary = "Logout a user")
     public ResponseEntity<?> logoutUser(HttpServletResponse response) {
         try {
             CookieSetup.unsetCookies(response);
@@ -152,6 +162,7 @@ public class AuthController {
     }
 
     @PatchMapping("/reset-password")
+    @Operation(summary = "Reset user password")
     public ResponseEntity<?> resetPassword(@RequestParam @Size(max = 255) String email, @RequestParam @Size(max = 255) String password) {
         try {
             userService.resetPassword(email, password);

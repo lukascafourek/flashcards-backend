@@ -2,6 +2,7 @@ package cz.cvut.fel.cafoulu1.flashcards.backend.controller;
 
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.TokenServiceImpl;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.emails.ResetPasswordEmailImpl;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -25,6 +26,7 @@ public class TokenController {
     private static final Logger logger = LogManager.getLogger(TokenController.class);
 
     @PostMapping("/request-reset")
+    @Operation(summary = "Request a password reset token")
     public ResponseEntity<?> sendToken(@RequestBody Map<String, String> request) {
         try {
             String email = request.get("email");
@@ -41,6 +43,7 @@ public class TokenController {
     }
 
     @GetMapping("/verify")
+    @Operation(summary = "Verify a password reset token")
     public ResponseEntity<?> verifyToken(@RequestParam @Size(max = 255) String email, @RequestParam @Size(max = 255) String token) {
         try {
             tokenService.verifyToken(email, token);

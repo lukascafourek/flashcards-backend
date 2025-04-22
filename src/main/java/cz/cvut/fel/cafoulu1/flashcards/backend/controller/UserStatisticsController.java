@@ -2,6 +2,7 @@ package cz.cvut.fel.cafoulu1.flashcards.backend.controller;
 
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.UserStatisticsServiceImpl;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.userdetails.UserDetailsImpl;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,6 +25,7 @@ public class UserStatisticsController {
 
     @GetMapping("/values")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Get user statistics")
     public ResponseEntity<?> getUserStatistics(Authentication authentication) {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
