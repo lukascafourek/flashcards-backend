@@ -1,6 +1,6 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.controller;
 
-import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicUserStatisticsDto;
+import cz.cvut.fel.cafoulu1.flashcards.backend.dto.UserStatisticsDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.UserStatisticsServiceImpl;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.userdetails.UserDetailsImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +35,7 @@ public class UserStatisticsControllerTest {
     @Test
     void getUserStatistics_returnsOkWithStatisticsWhenUserIsAuthenticated() {
         UUID userId = UUID.randomUUID();
-        BasicUserStatisticsDto statistics = new BasicUserStatisticsDto();
+        UserStatisticsDto statistics = new UserStatisticsDto();
 
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn(userId);

@@ -1,6 +1,6 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.service;
 
-import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicUserStatisticsDto;
+import cz.cvut.fel.cafoulu1.flashcards.backend.dto.UserStatisticsDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.mapper.UserStatisticsMapper;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.UserStatistics;
 import cz.cvut.fel.cafoulu1.flashcards.backend.repository.UserStatisticsRepository;
@@ -22,7 +22,7 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 
     @Transactional
     @Override
-    public BasicUserStatisticsDto getUserStatistics(UUID userId) {
+    public UserStatisticsDto getUserStatistics(UUID userId) {
         UserStatistics userStatistics = userStatisticsRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User statistics not found"));
         return userStatisticsMapper.toDtoBasic(userStatistics);

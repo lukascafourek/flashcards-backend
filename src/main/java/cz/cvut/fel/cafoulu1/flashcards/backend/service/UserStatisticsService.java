@@ -1,6 +1,6 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.service;
 
-import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicUserStatisticsDto;
+import cz.cvut.fel.cafoulu1.flashcards.backend.dto.UserStatisticsDto;
 
 import java.util.UUID;
 
@@ -14,5 +14,5 @@ public interface UserStatisticsService {
      * @param userId the ID of the user
      * @return the user statistics details
      */
-    BasicUserStatisticsDto getUserStatistics(UUID userId);
+    UserStatisticsDto getUserStatistics(UUID userId);
 }

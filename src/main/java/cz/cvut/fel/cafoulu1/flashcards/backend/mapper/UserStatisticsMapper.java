@@ -1,12 +1,12 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.mapper;
 
-import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicUserStatisticsDto;
+import cz.cvut.fel.cafoulu1.flashcards.backend.dto.UserStatisticsDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.UserStatistics;
 import org.mapstruct.*;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface UserStatisticsMapper {
-    BasicUserStatisticsDto toDtoBasic(UserStatistics userStatistics);
+    UserStatisticsDto toDtoBasic(UserStatistics userStatistics);
 
     @Named("incrementStatistic")
     default void incrementStatistic(UserStatistics userStatistics, String statistic) {

@@ -1,7 +1,6 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.dto;
 
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicCardSetDto;
-import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicSetStatisticsDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.Category;
 import lombok.Data;
 
@@ -14,7 +13,7 @@ import java.util.List;
 @Data
 public class CardSetDto implements Serializable {
     BasicCardSetDto basicCardSetDto;
-    BasicSetStatisticsDto setStatistics;
+    SetStatisticsDto setStatistics;
     List<CardDto> cards;
     Boolean favorite;
     Boolean creator;

@@ -1,6 +1,6 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.service;
 
-import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicUserStatisticsDto;
+import cz.cvut.fel.cafoulu1.flashcards.backend.dto.UserStatisticsDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.mapper.UserStatisticsMapper;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.UserStatistics;
 import cz.cvut.fel.cafoulu1.flashcards.backend.repository.UserStatisticsRepository;
@@ -34,12 +34,12 @@ class UserStatisticsServiceTest {
     void getUserStatistics_returnsMappedDtoWhenUserStatisticsExist() {
         UUID userId = UUID.randomUUID();
         UserStatistics userStatistics = new UserStatistics();
-        BasicUserStatisticsDto expectedDto = new BasicUserStatisticsDto();
+        UserStatisticsDto expectedDto = new UserStatisticsDto();
 
         when(userStatisticsRepository.findById(userId)).thenReturn(Optional.of(userStatistics));
         when(userStatisticsMapper.toDtoBasic(userStatistics)).thenReturn(expectedDto);
 
-        BasicUserStatisticsDto result = userStatisticsService.getUserStatistics(userId);
+        UserStatisticsDto result = userStatisticsService.getUserStatistics(userId);
 
         assertEquals(expectedDto, result);
         verify(userStatisticsRepository).findById(userId);
