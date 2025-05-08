@@ -24,7 +24,7 @@ public class WebConfig {
                         .allowedOrigins(frontendUrl)
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD", "TRACE", "CONNECT")
                         .allowedHeaders("*")
-                        .exposedHeaders("Authorization", "X-Is-Admin")
+                        .exposedHeaders("Authorization")
                         .allowCredentials(true);
             }
         };

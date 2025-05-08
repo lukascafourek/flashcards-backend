@@ -3,6 +3,7 @@ package cz.cvut.fel.cafoulu1.flashcards.backend.controller;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.LoginRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.RegisterRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.UpdateUserRequest;
+import cz.cvut.fel.cafoulu1.flashcards.backend.model.Role;
 import cz.cvut.fel.cafoulu1.flashcards.backend.security.jwtconfig.JwtUtils;
 import cz.cvut.fel.cafoulu1.flashcards.backend.security.response.CookieSetup;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.UserServiceImpl;
@@ -83,7 +84,7 @@ public class AuthController {
     }
 
     @GetMapping("/get-all-users")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') && isAuthenticated()")
     @Operation(summary = "Get all users")
     public ResponseEntity<?> getAllUsers() {
         try {
@@ -109,7 +110,7 @@ public class AuthController {
     }
 
     @PatchMapping("/update-user/{email}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') && isAuthenticated()")
     @Operation(summary = "Update user by admin")
     public ResponseEntity<String> updateUserByAdmin(@PathVariable("email") String email, @Valid @RequestBody UpdateUserRequest updateUserRequest) {
         try {
@@ -137,7 +138,7 @@ public class AuthController {
     }
 
     @DeleteMapping("/delete-account/{userId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') && isAuthenticated()")
     @Operation(summary = "Delete user account by admin")
     public ResponseEntity<String> deleteAccountByAdmin(@PathVariable("userId") UUID userId) {
         try {
@@ -169,6 +170,21 @@ public class AuthController {
             return ResponseEntity.ok("Password reset successfully.");
         } catch (Exception e) {
             logger.error("Error during password reset: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/is-admin")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Check if user is admin")
+    public ResponseEntity<?> isAdmin(Authentication authentication) {
+        try {
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            boolean isAdmin = userDetails.getAuthorities().stream()
+                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_" + Role.ADMIN));
+            return ResponseEntity.ok(isAdmin);
+        } catch (Exception e) {
+            logger.error("Error during checking if user is admin: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
