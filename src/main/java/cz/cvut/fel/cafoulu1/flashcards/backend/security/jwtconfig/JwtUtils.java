@@ -8,6 +8,7 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.service.oauth2.OAuth2UserImpl;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.userdetails.UserDetailsImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +29,9 @@ import io.jsonwebtoken.security.SignatureException;
  */
 @Component
 public class JwtUtils {
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+
     private static final Logger logger = LogManager.getLogger(JwtUtils.class);
 
     public String generateJwtToken(Authentication authentication) {
@@ -50,7 +54,6 @@ public class JwtUtils {
     }
 
     private SecretKey getSigningKey() {
-        String jwtSecret = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
