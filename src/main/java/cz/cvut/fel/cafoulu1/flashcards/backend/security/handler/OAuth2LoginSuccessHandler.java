@@ -29,10 +29,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         CookieSetup.setCookies(response, authentication, jwtUtils);
         String authorization = response.getHeader("Authorization");
         String jwt = authorization.substring(7);
-        String isAdmin = response.getHeader("X-Is-Admin");
         String redirectUrl = frontendUrl + "/auth/redirect" +
-                "?token=" + jwt +
-                "&isAdmin=" + isAdmin;
+                "?token=" + jwt;
         response.sendRedirect(redirectUrl);
     }
 }

@@ -144,7 +144,7 @@ public class CardSetController {
     }
 
     @GetMapping("/get-all")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') && isAuthenticated()")
     @Operation(summary = "Get all card sets")
     public ResponseEntity<?> getAllCardSets() {
         try {
@@ -156,7 +156,7 @@ public class CardSetController {
     }
 
     @GetMapping("/get-cards")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') && isAuthenticated()")
     @Operation(summary = "Get all cards")
     public ResponseEntity<?> getAllCards() {
         try {
