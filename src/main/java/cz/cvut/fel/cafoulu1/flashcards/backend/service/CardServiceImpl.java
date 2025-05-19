@@ -114,7 +114,7 @@ public class CardServiceImpl implements CardService {
     public List<CardDto> getCards(UUID cardSetId) {
         CardSet cardSet = cardSetRepository.findById(cardSetId)
                 .orElseThrow(() -> new IllegalArgumentException("Card set not found"));
-        return cardRepository.findByCardSetOrderByCardOrderAsc(cardSet).stream()
+        return cardSet.getCards().stream()
                 .map(card -> CardMapperHelper.getInstance().mapCardToDto(card, cardMapper, pictureRepository))
                 .toList();
     }

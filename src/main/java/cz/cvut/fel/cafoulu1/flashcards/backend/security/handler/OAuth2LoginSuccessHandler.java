@@ -1,7 +1,7 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.security.handler;
 
 import cz.cvut.fel.cafoulu1.flashcards.backend.security.jwtconfig.JwtUtils;
-import cz.cvut.fel.cafoulu1.flashcards.backend.security.response.CookieSetup;
+import cz.cvut.fel.cafoulu1.flashcards.backend.security.response.JwtResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
-        CookieSetup.setCookies(response, authentication, jwtUtils);
+        JwtResponse.setCookies(response, authentication, jwtUtils);
         String authorization = response.getHeader("Authorization");
         String jwt = authorization.substring(7);
         String redirectUrl = frontendUrl + "/auth/redirect" +

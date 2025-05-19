@@ -41,12 +41,9 @@ public class CardMapperHelperTest {
         CardDto cardDto = new CardDto();
         Picture picture = new Picture();
         picture.setPicture(new byte[]{1, 2, 3});
-
         when(cardMapper.toDto(card)).thenReturn(cardDto);
         when(pictureRepository.findById(card.getId())).thenReturn(Optional.of(picture));
-
         CardDto result = cardMapperHelper.mapCardToDto(card, cardMapper, pictureRepository);
-
         assertEquals(Base64.getEncoder().encodeToString(picture.getPicture()), result.getPicture());
         assertEquals("application/octet-stream", result.getMimeType());
     }
@@ -56,12 +53,9 @@ public class CardMapperHelperTest {
         Card card = new Card();
         card.setId(UUID.randomUUID());
         CardDto cardDto = new CardDto();
-
         when(cardMapper.toDto(card)).thenReturn(cardDto);
         when(pictureRepository.findById(card.getId())).thenReturn(Optional.empty());
-
         CardDto result = cardMapperHelper.mapCardToDto(card, cardMapper, pictureRepository);
-
         assertNull(result.getPicture());
         assertNull(result.getMimeType());
     }
@@ -76,12 +70,9 @@ public class CardMapperHelperTest {
         FullCardInfo fullCardInfo = new FullCardInfo();
         Picture picture = new Picture();
         picture.setPicture(new byte[]{1, 2, 3});
-
         when(cardMapper.toFullDto(card)).thenReturn(fullCardInfo);
         when(pictureRepository.findById(card.getId())).thenReturn(Optional.of(picture));
-
         FullCardInfo result = cardMapperHelper.mapCardToFullInfo(card, cardMapper, pictureRepository);
-
         assertEquals(cardSet.getId(), result.getCardSetId());
         assertEquals(Base64.getEncoder().encodeToString(picture.getPicture()), result.getPicture());
         assertEquals("application/octet-stream", result.getMimeType());
@@ -95,12 +86,9 @@ public class CardMapperHelperTest {
         cardSet.setId(UUID.randomUUID());
         card.setCardSet(cardSet);
         FullCardInfo fullCardInfo = new FullCardInfo();
-
         when(cardMapper.toFullDto(card)).thenReturn(fullCardInfo);
         when(pictureRepository.findById(card.getId())).thenReturn(Optional.empty());
-
         FullCardInfo result = cardMapperHelper.mapCardToFullInfo(card, cardMapper, pictureRepository);
-
         assertEquals(cardSet.getId(), result.getCardSetId());
         assertNull(result.getPicture());
         assertNull(result.getMimeType());

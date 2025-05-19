@@ -1,7 +1,7 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.controller;
 
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.CardDto;
-import cz.cvut.fel.cafoulu1.flashcards.backend.dto.CardSetDto;
+import cz.cvut.fel.cafoulu1.flashcards.backend.dto.response.CarsSetResponse;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.CardSetRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.FilterCardSetsRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.response.CardSetsResponse;
@@ -51,13 +51,10 @@ public class CardSetControllerTest {
         CardSetRequest cardSetRequest = new CardSetRequest();
         UUID userId = UUID.randomUUID();
         UUID setId = UUID.randomUUID();
-
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn(userId);
         when(cardSetService.createCardSet(userId, cardSetRequest)).thenReturn(setId);
-
         ResponseEntity<?> response = cardSetController.createCardSet(cardSetRequest, authentication);
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(setId, response.getBody());
         verify(cardSetService).createCardSet(userId, cardSetRequest);
@@ -67,13 +64,10 @@ public class CardSetControllerTest {
     void createCardSet_returnsBadRequestWhenExceptionIsThrown() {
         CardSetRequest cardSetRequest = new CardSetRequest();
         UUID userId = UUID.randomUUID();
-
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn(userId);
         when(cardSetService.createCardSet(userId, cardSetRequest)).thenThrow(new RuntimeException("Testing error"));
-
         ResponseEntity<?> response = cardSetController.createCardSet(cardSetRequest, authentication);
-
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Testing error", response.getBody());
         verify(cardSetService).createCardSet(userId, cardSetRequest);
@@ -84,13 +78,10 @@ public class CardSetControllerTest {
         UUID cardSetId = UUID.randomUUID();
         UUID copyId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
-
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn(userId);
         when(cardSetService.copyCardSet(cardSetId, userId)).thenReturn(copyId);
-
         ResponseEntity<?> response = cardSetController.copyCardSet(cardSetId, authentication);
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(copyId, response.getBody());
         verify(cardSetService).copyCardSet(cardSetId, userId);
@@ -100,13 +91,10 @@ public class CardSetControllerTest {
     void copyCardSet_returnsBadRequestWhenExceptionIsThrown() {
         UUID cardSetId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
-
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn(userId);
         when(cardSetService.copyCardSet(cardSetId, userId)).thenThrow(new RuntimeException("Testing error"));
-
         ResponseEntity<?> response = cardSetController.copyCardSet(cardSetId, authentication);
-
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Testing error", response.getBody());
         verify(cardSetService).copyCardSet(cardSetId, userId);
@@ -117,13 +105,10 @@ public class CardSetControllerTest {
         UUID cardSetId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
         CardSetRequest cardSetRequest = new CardSetRequest();
-
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn(userId);
         doNothing().when(cardSetService).updateCardSet(cardSetId, cardSetRequest, userId);
-
         ResponseEntity<?> response = cardSetController.updateCardSet(cardSetId, cardSetRequest, authentication);
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(cardSetService).updateCardSet(cardSetId, cardSetRequest, userId);
     }
@@ -133,13 +118,10 @@ public class CardSetControllerTest {
         UUID cardSetId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
         CardSetRequest cardSetRequest = new CardSetRequest();
-
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn(userId);
         doThrow(new RuntimeException("Testing error")).when(cardSetService).updateCardSet(cardSetId, cardSetRequest, userId);
-
         ResponseEntity<?> response = cardSetController.updateCardSet(cardSetId, cardSetRequest, authentication);
-
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Testing error", response.getBody());
         verify(cardSetService).updateCardSet(cardSetId, cardSetRequest, userId);
@@ -149,13 +131,10 @@ public class CardSetControllerTest {
     void updateFavoriteCardSet_returnsOkWhenFavoriteStatusIsUpdatedSuccessfully() {
         UUID cardSetId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
-
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn(userId);
         doNothing().when(cardSetService).updateFavoriteCardSet(cardSetId, true, userId);
-
         ResponseEntity<?> response = cardSetController.updateFavoriteCardSet(cardSetId, true, authentication);
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(cardSetService).updateFavoriteCardSet(cardSetId, true, userId);
     }
@@ -164,13 +143,10 @@ public class CardSetControllerTest {
     void updateFavoriteCardSet_returnsBadRequestWhenExceptionIsThrown() {
         UUID cardSetId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
-
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn(userId);
         doThrow(new RuntimeException("Testing error")).when(cardSetService).updateFavoriteCardSet(cardSetId, true, userId);
-
         ResponseEntity<?> response = cardSetController.updateFavoriteCardSet(cardSetId, true, authentication);
-
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Testing error", response.getBody());
         verify(cardSetService).updateFavoriteCardSet(cardSetId, true, userId);
@@ -180,13 +156,10 @@ public class CardSetControllerTest {
     void deleteCardSet_returnsOkWhenCardSetIsDeletedSuccessfully() {
         UUID cardSetId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
-
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn(userId);
         doNothing().when(cardSetService).deleteCardSet(cardSetId, userId);
-
         ResponseEntity<?> response = cardSetController.deleteCardSet(cardSetId, authentication);
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(cardSetService).deleteCardSet(cardSetId, userId);
     }
@@ -195,13 +168,10 @@ public class CardSetControllerTest {
     void deleteCardSet_returnsBadRequestWhenExceptionIsThrown() {
         UUID cardSetId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
-
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn(userId);
         doThrow(new RuntimeException("Testing error")).when(cardSetService).deleteCardSet(cardSetId, userId);
-
         ResponseEntity<?> response = cardSetController.deleteCardSet(cardSetId, authentication);
-
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Testing error", response.getBody());
         verify(cardSetService).deleteCardSet(cardSetId, userId);
@@ -211,14 +181,11 @@ public class CardSetControllerTest {
     void getCardSet_returnsOkWhenCardSetIsRetrievedSuccessfully() {
         UUID cardSetId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
-        CardSetDto cardSet = new CardSetDto();
-
+        CarsSetResponse cardSet = new CarsSetResponse();
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn(userId);
         when(cardSetService.getCardSet(cardSetId, userId)).thenReturn(cardSet);
-
         ResponseEntity<?> response = cardSetController.getCardSet(cardSetId, authentication);
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(cardSet, response.getBody());
         verify(cardSetService).getCardSet(cardSetId, userId);
@@ -228,13 +195,10 @@ public class CardSetControllerTest {
     void getCardSet_returnsBadRequestWhenExceptionIsThrown() {
         UUID cardSetId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
-
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn(userId);
         when(cardSetService.getCardSet(cardSetId, userId)).thenThrow(new RuntimeException("Testing error"));
-
         ResponseEntity<?> response = cardSetController.getCardSet(cardSetId, authentication);
-
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Testing error", response.getBody());
         verify(cardSetService).getCardSet(cardSetId, userId);
@@ -243,11 +207,8 @@ public class CardSetControllerTest {
     @Test
     void getAllCardSets_returnsOkWhenCardSetsAreRetrievedSuccessfully() {
         List<FullCardSetInfo> cardSets = List.of(new FullCardSetInfo(), new FullCardSetInfo());
-
         when(cardSetService.getAllCardSets()).thenReturn(cardSets);
-
         ResponseEntity<?> response = cardSetController.getAllCardSets();
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(cardSets, response.getBody());
         verify(cardSetService).getAllCardSets();
@@ -256,9 +217,7 @@ public class CardSetControllerTest {
     @Test
     void getAllCardSets_returnsBadRequestWhenExceptionIsThrown() {
         when(cardSetService.getAllCardSets()).thenThrow(new RuntimeException("Testing error"));
-
         ResponseEntity<?> response = cardSetController.getAllCardSets();
-
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Testing error", response.getBody());
         verify(cardSetService).getAllCardSets();
@@ -267,11 +226,8 @@ public class CardSetControllerTest {
     @Test
     void getAllCards_returnsOkWhenCardsAreRetrievedSuccessfully() {
         List<FullCardInfo> cards = List.of(new FullCardInfo(), new FullCardInfo());
-
         when(cardSetService.getAllCards()).thenReturn(cards);
-
         ResponseEntity<?> response = cardSetController.getAllCards();
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(cards, response.getBody());
         verify(cardSetService).getAllCards();
@@ -280,9 +236,7 @@ public class CardSetControllerTest {
     @Test
     void getAllCards_returnsBadRequestWhenExceptionIsThrown() {
         when(cardSetService.getAllCards()).thenThrow(new RuntimeException("Testing error"));
-
         ResponseEntity<?> response = cardSetController.getAllCards();
-
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Testing error", response.getBody());
         verify(cardSetService).getAllCards();
@@ -294,13 +248,10 @@ public class CardSetControllerTest {
         UUID userId = UUID.randomUUID();
         List<CardDto> cards = List.of(new CardDto(), new CardDto());
         Map<String, List<CardDto>> orderList = Map.of("cards", cards);
-
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn(userId);
         doNothing().when(cardSetService).updateOrderOfCards(cardSetId, cards, userId);
-
         ResponseEntity<?> response = cardSetController.updateCardOrder(cardSetId, orderList, authentication);
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(cardSetService).updateOrderOfCards(cardSetId, cards, userId);
     }
@@ -309,9 +260,7 @@ public class CardSetControllerTest {
     void updateCardOrder_returnsBadRequestWhenCardsListIsMissing() {
         UUID cardSetId = UUID.randomUUID();
         Map<String, List<CardDto>> orderList = Map.of("cards", List.of());
-
         ResponseEntity<?> response = cardSetController.updateCardOrder(cardSetId, orderList, authentication);
-
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Cards list is required", response.getBody());
         verifyNoInteractions(cardSetService);
@@ -323,13 +272,10 @@ public class CardSetControllerTest {
         UUID userId = UUID.randomUUID();
         List<CardDto> cards = List.of(new CardDto(), new CardDto());
         Map<String, List<CardDto>> orderList = Map.of("cards", cards);
-
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn(userId);
         doThrow(new RuntimeException("Testing error")).when(cardSetService).updateOrderOfCards(cardSetId, cards, userId);
-
         ResponseEntity<?> response = cardSetController.updateCardOrder(cardSetId, orderList, authentication);
-
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Testing error", response.getBody());
         verify(cardSetService).updateOrderOfCards(cardSetId, cards, userId);
@@ -344,14 +290,11 @@ public class CardSetControllerTest {
         cardSets.setCardSets(List.of());
         cardSets.setPages(1);
         cardSets.setCategories(List.of());
-
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn(userId);
         when(cardSetMapper.createFilterCardSetsRequest("", "", false, false, userId)).thenReturn(filterRequest);
         when(cardSetService.getFilteredCardSets(any(Pageable.class), eq(filterRequest))).thenReturn(cardSets);
-
         ResponseEntity<?> response = cardSetController.getAllCardSetsWithPagination(1, 20, "creationDate", "desc", "", "", false, false, authentication);
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(cardSets, response.getBody());
         verify(cardSetMapper).createFilterCardSetsRequest("", "", false, false, userId);
@@ -363,14 +306,11 @@ public class CardSetControllerTest {
         UUID userId = UUID.randomUUID();
         FilterCardSetsRequest filterRequest = new FilterCardSetsRequest();
         Pageable pageable = PageRequest.of(0, 20, Sort.by(Sort.Direction.DESC, "creationDate"));
-
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn(userId);
         when(cardSetMapper.createFilterCardSetsRequest("", "", false, false, userId)).thenReturn(filterRequest);
         when(cardSetService.getFilteredCardSets(any(Pageable.class), eq(filterRequest))).thenThrow(new RuntimeException("Testing error"));
-
         ResponseEntity<?> response = cardSetController.getAllCardSetsWithPagination(1, 20, "creationDate", "desc", "", "", false, false, authentication);
-
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Testing error", response.getBody());
         verify(cardSetMapper).createFilterCardSetsRequest("", "", false, false, userId);

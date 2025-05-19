@@ -1,7 +1,7 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.service;
 
+import cz.cvut.fel.cafoulu1.flashcards.backend.dto.response.FullUserInfo;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.UserDto;
-import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicUserDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.RegisterRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.UpdateUserRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.mapper.UserMapper;
@@ -137,17 +137,17 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public BasicUserDto findById(UUID userId) {
+    public UserDto findById(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        return userMapper.toDtoBasic(user);
+        return userMapper.toDto(user);
     }
 
     @Transactional
     @Override
-    public List<UserDto> findAll() {
+    public List<FullUserInfo> findAll() {
         return userRepository.findAll().stream()
-                .map(userMapper::toDto)
+                .map(userMapper::toFullDto)
                 .toList();
     }
 }

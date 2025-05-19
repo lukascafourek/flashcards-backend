@@ -45,11 +45,8 @@ public class CardSetDeletionHelperTest {
         user1.getFavoriteSets().add(cardSet);
         cardSet.setFavoriteUsers(new ArrayList<>());
         cardSet.getFavoriteUsers().add(user1);
-
         when(userRepository.saveAll(cardSet.getFavoriteUsers())).thenReturn(List.of(user1));
-
         cardSetDeletionHelper.cardSetDeleteHelper(cardSet, userRepository, setStatisticsRepository, pictureRepository, cardRepository);
-
         assertTrue(user1.getFavoriteSets().isEmpty());
         verify(userRepository).saveAll(cardSet.getFavoriteUsers());
     }
@@ -64,11 +61,8 @@ public class CardSetDeletionHelperTest {
         cardSet.getSetStatistics().add(setStatistics);
         user.setSetStatistics(new ArrayList<>());
         user.getSetStatistics().add(setStatistics);
-
         when(userRepository.saveAll(anyList())).thenReturn(List.of(user));
-
         cardSetDeletionHelper.cardSetDeleteHelper(cardSet, userRepository, setStatisticsRepository, pictureRepository, cardRepository);
-
         assertTrue(user.getSetStatistics().isEmpty());
         verify(setStatisticsRepository).deleteAll(cardSet.getSetStatistics());
         verify(userRepository, times(2)).saveAll(anyList());
@@ -85,11 +79,8 @@ public class CardSetDeletionHelperTest {
         cardSet.setCards(List.of(card));
         Picture picture = new Picture();
         picture.setCard(card);
-
         when(pictureRepository.findById(card.getId())).thenReturn(Optional.of(picture));
-
         cardSetDeletionHelper.cardSetDeleteHelper(cardSet, userRepository, setStatisticsRepository, pictureRepository, cardRepository);
-
         assertEquals(0, user.getNumberOfImages());
         verify(pictureRepository).delete(picture);
         verify(userRepository).save(user);
@@ -101,9 +92,7 @@ public class CardSetDeletionHelperTest {
         Card card1 = new Card();
         Card card2 = new Card();
         cardSet.setCards(List.of(card1, card2));
-
         cardSetDeletionHelper.cardSetDeleteHelper(cardSet, userRepository, setStatisticsRepository, pictureRepository, cardRepository);
-
         verify(cardRepository).deleteAll(cardSet.getCards());
     }
 }

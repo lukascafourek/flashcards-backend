@@ -1,7 +1,7 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.service;
 
+import cz.cvut.fel.cafoulu1.flashcards.backend.dto.response.FullUserInfo;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.UserDto;
-import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicUserDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.RegisterRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.UpdateUserRequest;
 
@@ -48,12 +48,12 @@ public interface UserService {
      * @param userId the ID of the user to be retrieved
      * @return the details of the user
      */
-    BasicUserDto findById(UUID userId);
+    UserDto findById(UUID userId);
 
     /**
      * Gets a list of all users.
      *
      * @return a list of all users
      */
-    List<UserDto> findAll();
+    List<FullUserInfo> findAll();
 }

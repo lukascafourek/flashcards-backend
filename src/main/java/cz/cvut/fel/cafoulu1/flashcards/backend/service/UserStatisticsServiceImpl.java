@@ -25,6 +25,6 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
     public UserStatisticsDto getUserStatistics(UUID userId) {
         UserStatistics userStatistics = userStatisticsRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User statistics not found"));
-        return userStatisticsMapper.toDtoBasic(userStatistics);
+        return userStatisticsMapper.toDto(userStatistics);
     }
 }

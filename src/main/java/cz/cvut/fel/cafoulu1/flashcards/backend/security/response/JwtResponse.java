@@ -9,7 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 /**
  * This class is used for setting cookies in the response.
  */
-public class CookieSetup {
+public class JwtResponse {
     public static void setCookies(HttpServletResponse response, Authentication authentication, JwtUtils jwtUtils) {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);

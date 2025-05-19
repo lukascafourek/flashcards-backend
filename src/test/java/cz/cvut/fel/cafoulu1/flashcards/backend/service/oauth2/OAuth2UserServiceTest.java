@@ -35,7 +35,6 @@ public class OAuth2UserServiceTest {
     void registerNewUser_throwsExceptionWhenEmailIsInvalid() {
         String invalidEmail = "";
         String name = "User Name";
-
         assertThrows(IllegalArgumentException.class, () -> oAuth2UserServiceImpl.registerNewUser(invalidEmail, name));
     }
 
@@ -43,7 +42,6 @@ public class OAuth2UserServiceTest {
     void registerNewUser_throwsExceptionWhenNameIsInvalid() {
         String email = "user@example.com";
         String invalidName = "";
-
         assertThrows(IllegalArgumentException.class, () -> oAuth2UserServiceImpl.registerNewUser(email, invalidName));
     }
 
@@ -52,11 +50,8 @@ public class OAuth2UserServiceTest {
         String email = "user@example.com";
         String name = "User Name";
         User user = new User();
-
         when(userRepository.save(any(User.class))).thenReturn(user);
-
         User result = oAuth2UserServiceImpl.registerNewUser(email, name);
-
         assertNotNull(result);
         verify(userRepository).save(any(User.class));
         verify(userStatisticsRepository).save(any(UserStatistics.class));

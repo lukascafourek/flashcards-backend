@@ -7,8 +7,8 @@ public interface EmailService {
     /**
      * Sends an email to the user with the given username (or token) and email address.
      *
-     * @param username  given username (in ResetPasswordEmailImpl it is token)
+     * @param param     given param (username for registration, token for password reset)
      * @param email     given email address
      */
-    void sendEmail(String username, String email);
+    void sendEmail(String param, String email);
 }

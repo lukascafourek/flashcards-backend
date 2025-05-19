@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Integration tests for core user authentication and account management functionality.
@@ -75,14 +76,11 @@ public class AuthIntegrationTests {
         request.setEmail(EMAIL);
         request.setPassword(PASSWORD);
         request.setUsername(USERNAME);
-
         userService.registerUser(request);
-
         Optional<User> userOpt = userRepository.findByEmail(EMAIL);
         assertThat(userOpt).isPresent();
         User user = userOpt.get();
         assertThat(user.getUsername()).isEqualTo(USERNAME);
-
         userId = user.getId();
     }
 
@@ -92,7 +90,7 @@ public class AuthIntegrationTests {
         UserDetails userDetails = userDetailsService.loadUserByUsername(EMAIL);
         assertThat(userDetails).isNotNull();
         assertThat(userDetails.getUsername()).isEqualTo(EMAIL);
-        assertThat(passwordEncoder.matches(PASSWORD, userDetails.getPassword())).isTrue();
+        assertTrue(passwordEncoder.matches(PASSWORD, userDetails.getPassword()));
         assertThat(userDetails.getAuthorities()).isNotEmpty();
     }
 
@@ -101,9 +99,7 @@ public class AuthIntegrationTests {
     public void updateUser_shouldUpdateUsername() {
         UpdateUserRequest updateRequest = new UpdateUserRequest();
         updateRequest.setUsername(UPDATED_USERNAME);
-
         userService.updateUser(EMAIL, updateRequest);
-
         Optional<User> userOpt = userRepository.findByEmail(EMAIL);
         assertThat(userOpt).isPresent();
         assertThat(userOpt.get().getUsername()).isEqualTo(UPDATED_USERNAME);
@@ -113,7 +109,6 @@ public class AuthIntegrationTests {
     @Order(4)
     public void deleteUser_shouldRemoveUserFromRepository() {
         userService.deleteUser(userId);
-
         Optional<User> userOpt = userRepository.findById(userId);
         assertThat(userOpt).isEmpty();
     }

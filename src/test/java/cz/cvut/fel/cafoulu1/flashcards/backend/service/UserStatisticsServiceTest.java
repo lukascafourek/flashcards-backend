@@ -35,23 +35,18 @@ class UserStatisticsServiceTest {
         UUID userId = UUID.randomUUID();
         UserStatistics userStatistics = new UserStatistics();
         UserStatisticsDto expectedDto = new UserStatisticsDto();
-
         when(userStatisticsRepository.findById(userId)).thenReturn(Optional.of(userStatistics));
-        when(userStatisticsMapper.toDtoBasic(userStatistics)).thenReturn(expectedDto);
-
+        when(userStatisticsMapper.toDto(userStatistics)).thenReturn(expectedDto);
         UserStatisticsDto result = userStatisticsService.getUserStatistics(userId);
-
         assertEquals(expectedDto, result);
         verify(userStatisticsRepository).findById(userId);
-        verify(userStatisticsMapper).toDtoBasic(userStatistics);
+        verify(userStatisticsMapper).toDto(userStatistics);
     }
 
     @Test
     void getUserStatistics_throwsExceptionWhenUserStatisticsNotFound() {
         UUID userId = UUID.randomUUID();
-
         when(userStatisticsRepository.findById(userId)).thenReturn(Optional.empty());
-
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userStatisticsService.getUserStatistics(userId));
         assertEquals("User statistics not found", exception.getMessage());
         verify(userStatisticsRepository).findById(userId);

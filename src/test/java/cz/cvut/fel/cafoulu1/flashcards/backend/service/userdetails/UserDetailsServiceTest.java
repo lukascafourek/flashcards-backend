@@ -32,11 +32,8 @@ public class UserDetailsServiceTest {
         String email = "user@example.com";
         User user = new User();
         user.setEmail(email);
-
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
-
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-
         assertNotNull(userDetails);
         assertEquals(email, userDetails.getUsername());
         verify(userRepository).findByEmail(email);
@@ -45,9 +42,7 @@ public class UserDetailsServiceTest {
     @Test
     void loadUserByUsername_throwsUsernameNotFoundExceptionWhenUserDoesNotExist() {
         String email = "nonexistent@example.com";
-
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
-
         assertThrows(UsernameNotFoundException.class, () -> userDetailsService.loadUserByUsername(email));
         verify(userRepository).findByEmail(email);
     }

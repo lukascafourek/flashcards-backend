@@ -1,8 +1,8 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.service;
 
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.CardDto;
+import cz.cvut.fel.cafoulu1.flashcards.backend.dto.response.CarsSetResponse;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.CardSetDto;
-import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicCardSetDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.CardRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.CardSetRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.FilterCardSetsRequest;
@@ -11,7 +11,6 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.dto.response.FullCardSetInfo;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.response.CardSetsResponse;
 import cz.cvut.fel.cafoulu1.flashcards.backend.mapper.CardMapper;
 import cz.cvut.fel.cafoulu1.flashcards.backend.mapper.CardSetMapper;
-import cz.cvut.fel.cafoulu1.flashcards.backend.mapper.SetStatisticsMapper;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.*;
 import cz.cvut.fel.cafoulu1.flashcards.backend.repository.*;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.cor.*;
@@ -48,8 +47,6 @@ public class CardSetServiceImpl implements CardSetService {
     private final CardSetMapper cardSetMapper;
 
     private final CardMapper cardMapper;
-
-    private final SetStatisticsMapper setStatisticsMapper;
 
     @Transactional
     @Override
@@ -147,7 +144,7 @@ public class CardSetServiceImpl implements CardSetService {
 
     @Transactional
     @Override
-    public CardSetDto getCardSet(UUID cardSetId, UUID userId) {
+    public CarsSetResponse getCardSet(UUID cardSetId, UUID userId) {
         CardSet cardSet = cardSetRepository.findById(cardSetId)
                 .orElseThrow(() -> new IllegalArgumentException("Card set not found"));
         if (cardSet.getPrivacy() && !cardSet.getUser().getId().equals(userId)) {
@@ -155,32 +152,16 @@ public class CardSetServiceImpl implements CardSetService {
         }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        SetStatistics setStatistics = setStatisticsRepository.findByCardSetIdAndUserId(cardSetId, userId)
-                .orElseGet(() -> {
-                    SetStatistics newSetStatistics = new SetStatistics();
-                    newSetStatistics.setCardSet(cardSet);
-                    newSetStatistics.setUser(user);
-                    return setStatisticsRepository.save(newSetStatistics);
-                });
-        cardSet.getSetStatistics().add(setStatistics);
-        cardSetRepository.save(cardSet);
-        user.getSetStatistics().add(setStatistics);
-        userRepository.save(user);
-        List<CardDto> cards = cardSet.getCards().stream()
-                .map(card -> CardMapperHelper.getInstance().mapCardToDto(card, cardMapper, pictureRepository))
-                .toList();
-        CardSetDto dto = new CardSetDto();
-        BasicCardSetDto basicCardSetDto = cardSetMapper.toDtoBasic(cardSet);
-        basicCardSetDto.setCreator(cardSet.getUser().getUsername());
-        dto.setBasicCardSetDto(basicCardSetDto);
-        dto.setSetStatistics(setStatisticsMapper.toDtoBasic(setStatistics));
-        dto.setCards(List.copyOf(cards));
-        dto.setFavorite(cardSet.getFavoriteUsers().contains(user));
-        dto.setCreator(cardSet.getUser().getId().equals(userId));
-        dto.setPrivacy(cardSet.getPrivacy());
-        dto.setCategories(List.of(Category.values()));
-        dto.setDescription(cardSet.getDescription());
-        return dto;
+        CarsSetResponse response = new CarsSetResponse();
+        CardSetDto cardSetDto = cardSetMapper.toDto(cardSet);
+        cardSetDto.setCreator(cardSet.getUser().getUsername());
+        response.setCardSetDto(cardSetDto);
+        response.setFavorite(cardSet.getFavoriteUsers().contains(user));
+        response.setCreator(cardSet.getUser().getId().equals(userId));
+        response.setPrivacy(cardSet.getPrivacy());
+        response.setCategories(List.of(Category.values()));
+        response.setDescription(cardSet.getDescription());
+        return response;
     }
 
     @Transactional
@@ -197,11 +178,11 @@ public class CardSetServiceImpl implements CardSetService {
         for (CardSetFilter filter : filters) {
             spec = filter.apply(filterCardSetsRequest, spec);
         }
-        List<BasicCardSetDto> cardSets = cardSetRepository.findAll(spec, pageable).stream()
+        List<CardSetDto> cardSets = cardSetRepository.findAll(spec, pageable).stream()
                 .map(cardSet -> {
-                    BasicCardSetDto basicCardSetDto = cardSetMapper.toDtoBasic(cardSet);
-                    basicCardSetDto.setCreator(cardSet.getUser().getUsername());
-                    return basicCardSetDto;
+                    CardSetDto cardSetDto = cardSetMapper.toDto(cardSet);
+                    cardSetDto.setCreator(cardSet.getUser().getUsername());
+                    return cardSetDto;
                 })
                 .toList();
         CardSetsResponse response = new CardSetsResponse();

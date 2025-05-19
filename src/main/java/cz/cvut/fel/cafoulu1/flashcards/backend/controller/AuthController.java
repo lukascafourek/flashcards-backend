@@ -5,7 +5,7 @@ import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.RegisterRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.UpdateUserRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.Role;
 import cz.cvut.fel.cafoulu1.flashcards.backend.security.jwtconfig.JwtUtils;
-import cz.cvut.fel.cafoulu1.flashcards.backend.security.response.CookieSetup;
+import cz.cvut.fel.cafoulu1.flashcards.backend.security.response.JwtResponse;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.UserServiceImpl;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.emails.RegistrationEmailImpl;
 import cz.cvut.fel.cafoulu1.flashcards.backend.service.userdetails.UserDetailsImpl;
@@ -62,7 +62,7 @@ public class AuthController {
     public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
-            CookieSetup.setCookies(response, authentication, jwtUtils);
+            JwtResponse.setCookies(response, authentication, jwtUtils);
             return ResponseEntity.ok("User logged in successfully.");
         } catch (Exception e) {
             logger.error("Error during user login: {}", e.getMessage());
@@ -129,7 +129,7 @@ public class AuthController {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
             userService.deleteUser(userDetails.getId());
-            CookieSetup.unsetCookies(response);
+            JwtResponse.unsetCookies(response);
             return ResponseEntity.ok("Account deleted successfully.");
         } catch (Exception e) {
             logger.error("Error during deleting account: {}", e.getMessage());
@@ -154,7 +154,7 @@ public class AuthController {
     @Operation(summary = "Logout a user")
     public ResponseEntity<?> logoutUser(HttpServletResponse response) {
         try {
-            CookieSetup.unsetCookies(response);
+            JwtResponse.unsetCookies(response);
             return ResponseEntity.ok("User logged out successfully.");
         } catch (Exception e) {
             logger.error("Error during user logout: {}", e.getMessage());

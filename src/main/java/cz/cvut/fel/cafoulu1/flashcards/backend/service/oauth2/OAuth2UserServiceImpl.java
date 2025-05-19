@@ -40,7 +40,7 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
         String name = oAuth2User.getAttribute("name");
         User user = userRepository.findByEmail(email)
                 .orElseGet(() -> registerNewUser(email, name));
-        return new OAuth2UserImpl(userMapper.toDtoBasic(user), oAuth2User.getAttributes());
+        return new OAuth2UserImpl(userMapper.toDto(user), oAuth2User.getAttributes());
     }
 
     @Transactional

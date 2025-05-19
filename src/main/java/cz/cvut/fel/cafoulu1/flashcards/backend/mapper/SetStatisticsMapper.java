@@ -6,7 +6,7 @@ import org.mapstruct.*;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface SetStatisticsMapper {
-    SetStatisticsDto toDtoBasic(SetStatistics setStatistics);
+    SetStatisticsDto toDto(SetStatistics setStatistics);
 
     @Named("incrementStatistic")
     default void incrementStatistic(SetStatistics setStatistics, String statistic) {

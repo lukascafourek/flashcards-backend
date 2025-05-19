@@ -39,12 +39,9 @@ public class TokenServiceTest {
         User user = new User();
         user.setId(UUID.randomUUID());
         user.setEmail(email);
-
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
         when(tokenRepository.existsById(user.getId())).thenReturn(false);
-
         String token = tokenService.generateToken(email);
-
         assertNotNull(token);
         verify(tokenRepository).save(any(Token.class));
     }
@@ -55,12 +52,9 @@ public class TokenServiceTest {
         User user = new User();
         user.setId(UUID.randomUUID());
         user.setEmail(email);
-
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
         when(tokenRepository.existsById(user.getId())).thenReturn(true);
-
         String token = tokenService.generateToken(email);
-
         assertNotNull(token);
         verify(tokenRepository).deleteById(user.getId());
         verify(tokenRepository).save(any(Token.class));
@@ -77,11 +71,9 @@ public class TokenServiceTest {
         token.setUser(user);
         token.setResetToken(passwordEncoder.encode(rawToken));
         token.setExpirationDate(LocalDateTime.now().plusMinutes(15));
-
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
         when(tokenRepository.findById(user.getId())).thenReturn(Optional.of(token));
         when(passwordEncoder.matches(rawToken, token.getResetToken())).thenReturn(true);
-
         assertDoesNotThrow(() -> tokenService.verifyToken(email, rawToken));
         verify(tokenRepository).deleteById(user.getId());
     }
@@ -97,11 +89,9 @@ public class TokenServiceTest {
         token.setUser(user);
         token.setResetToken(passwordEncoder.encode("87654321"));
         token.setExpirationDate(LocalDateTime.now().plusMinutes(15));
-
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
         when(tokenRepository.findById(user.getId())).thenReturn(Optional.of(token));
         when(passwordEncoder.matches(rawToken, token.getResetToken())).thenReturn(false);
-
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> tokenService.verifyToken(email, rawToken));
         assertEquals("Invalid token", exception.getMessage());
     }
@@ -117,11 +107,9 @@ public class TokenServiceTest {
         token.setUser(user);
         token.setResetToken(passwordEncoder.encode(rawToken));
         token.setExpirationDate(LocalDateTime.now().minusMinutes(1));
-
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
         when(tokenRepository.findById(user.getId())).thenReturn(Optional.of(token));
         when(passwordEncoder.matches(rawToken, token.getResetToken())).thenReturn(true);
-
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> tokenService.verifyToken(email, rawToken));
         assertEquals("Token expired", exception.getMessage());
         verify(tokenRepository).deleteById(user.getId());

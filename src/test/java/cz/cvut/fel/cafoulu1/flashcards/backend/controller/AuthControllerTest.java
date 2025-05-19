@@ -1,7 +1,7 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.controller;
 
+import cz.cvut.fel.cafoulu1.flashcards.backend.dto.response.FullUserInfo;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.UserDto;
-import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicUserDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.LoginRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.RegisterRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.UpdateUserRequest;
@@ -54,12 +54,9 @@ public class AuthControllerTest {
         registerRequest.setUsername("username");
         registerRequest.setPassword("password");
         registerRequest.setEmail("email@example.com");
-
         doNothing().when(userService).registerUser(registerRequest);
         doNothing().when(registrationEmail).sendEmail("username", "email@example.com");
-
         ResponseEntity<?> response = authController.registerUser(registerRequest);
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(userService).registerUser(registerRequest);
         verify(registrationEmail).sendEmail("username", "email@example.com");
@@ -68,11 +65,8 @@ public class AuthControllerTest {
     @Test
     void registerUser_returnsBadRequestWhenExceptionIsThrown() {
         RegisterRequest registerRequest = new RegisterRequest();
-
         doThrow(new RuntimeException("Testing error")).when(userService).registerUser(registerRequest);
-
         ResponseEntity<?> response = authController.registerUser(registerRequest);
-
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Testing error", response.getBody());
         verify(userService).registerUser(registerRequest);
@@ -82,12 +76,9 @@ public class AuthControllerTest {
     @Test
     void loginUser_returnsBadRequestWhenExceptionIsThrown() {
         LoginRequest loginRequest = new LoginRequest();
-
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenThrow(new RuntimeException("Testing error"));
-
         ResponseEntity<?> result = authController.loginUser(loginRequest, response);
-
         assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
         assertEquals("Testing error", result.getBody());
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
@@ -96,17 +87,14 @@ public class AuthControllerTest {
     @Test
     void getCurrentUser_returnsOkWhenUserIsRetrievedSuccessfully() {
         UUID userId = UUID.randomUUID();
-        BasicUserDto user = new BasicUserDto();
+        UserDto user = new UserDto();
         user.setEmail("email@example.com");
         user.setUsername("username");
         user.setProvider(AuthProvider.LOCAL);
-
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn(userId);
         when(userService.findById(userId)).thenReturn(user);
-
         ResponseEntity<?> response = authController.getCurrentUser(authentication);
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(user, response.getBody());
         verify(userService).findById(userId);
@@ -115,13 +103,10 @@ public class AuthControllerTest {
     @Test
     void getCurrentUser_returnsBadRequestWhenExceptionIsThrown() {
         UUID userId = UUID.randomUUID();
-
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn(userId);
         when(userService.findById(userId)).thenThrow(new RuntimeException("Testing error"));
-
         ResponseEntity<?> response = authController.getCurrentUser(authentication);
-
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Testing error", response.getBody());
         verify(userService).findById(userId);
@@ -129,12 +114,9 @@ public class AuthControllerTest {
 
     @Test
     void getAllUsers_returnsOkWhenUsersAreRetrievedSuccessfully() {
-        List<UserDto> users = List.of(new UserDto(), new UserDto());
-
+        List<FullUserInfo> users = List.of(new FullUserInfo(), new FullUserInfo());
         when(userService.findAll()).thenReturn(users);
-
         ResponseEntity<?> response = authController.getAllUsers();
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(users, response.getBody());
         verify(userService).findAll();
@@ -143,9 +125,7 @@ public class AuthControllerTest {
     @Test
     void getAllUsers_returnsBadRequestWhenExceptionIsThrown() {
         when(userService.findAll()).thenThrow(new RuntimeException("Testing error"));
-
         ResponseEntity<?> response = authController.getAllUsers();
-
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Testing error", response.getBody());
         verify(userService).findAll();
@@ -157,13 +137,10 @@ public class AuthControllerTest {
         updateUserRequest.setUsername("newUsername");
         updateUserRequest.setEmail("newEmail@example.com");
         updateUserRequest.setPassword("newPassword");
-
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getUsername()).thenReturn("email@example.com");
         doNothing().when(userService).updateUser("email@example.com", updateUserRequest);
-
         ResponseEntity<String> response = authController.updateUser(updateUserRequest, authentication);
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(userService).updateUser("email@example.com", updateUserRequest);
     }
@@ -171,13 +148,10 @@ public class AuthControllerTest {
     @Test
     void updateUser_returnsBadRequestWhenExceptionIsThrown() {
         UpdateUserRequest updateUserRequest = new UpdateUserRequest();
-
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getUsername()).thenReturn("email@example.com");
         doThrow(new RuntimeException("Testing error")).when(userService).updateUser("email@example.com", updateUserRequest);
-
         ResponseEntity<String> response = authController.updateUser(updateUserRequest, authentication);
-
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Testing error", response.getBody());
         verify(userService).updateUser("email@example.com", updateUserRequest);
@@ -189,11 +163,8 @@ public class AuthControllerTest {
         updateUserRequest.setUsername("newUsername");
         updateUserRequest.setEmail("newEmail@example.com");
         updateUserRequest.setPassword("newPassword");
-
         doNothing().when(userService).updateUser("email@example.com", updateUserRequest);
-
         ResponseEntity<String> response = authController.updateUserByAdmin("email@example.com", updateUserRequest);
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(userService).updateUser("email@example.com", updateUserRequest);
     }
@@ -201,11 +172,8 @@ public class AuthControllerTest {
     @Test
     void updateUserByAdmin_returnsBadRequestWhenExceptionIsThrown() {
         UpdateUserRequest updateUserRequest = new UpdateUserRequest();
-
         doThrow(new RuntimeException("Testing error")).when(userService).updateUser("email@example.com", updateUserRequest);
-
         ResponseEntity<String> response = authController.updateUserByAdmin("email@example.com", updateUserRequest);
-
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Testing error", response.getBody());
         verify(userService).updateUser("email@example.com", updateUserRequest);
@@ -214,13 +182,10 @@ public class AuthControllerTest {
     @Test
     void deleteAccount_returnsBadRequestWhenExceptionIsThrown() {
         UUID userId = UUID.randomUUID();
-
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn(userId);
         doThrow(new RuntimeException("Testing error")).when(userService).deleteUser(userId);
-
         ResponseEntity<String> result = authController.deleteAccount(authentication, response);
-
         assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
         assertEquals("Testing error", result.getBody());
         verify(userService).deleteUser(userId);
@@ -229,11 +194,8 @@ public class AuthControllerTest {
     @Test
     void deleteAccountByAdmin_returnsOkWhenAccountIsDeletedSuccessfully() {
         UUID userId = UUID.randomUUID();
-
         doNothing().when(userService).deleteUser(userId);
-
         ResponseEntity<String> response = authController.deleteAccountByAdmin(userId);
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(userService).deleteUser(userId);
     }
@@ -241,11 +203,8 @@ public class AuthControllerTest {
     @Test
     void deleteAccountByAdmin_returnsBadRequestWhenExceptionIsThrown() {
         UUID userId = UUID.randomUUID();
-
         doThrow(new RuntimeException("Testing error")).when(userService).deleteUser(userId);
-
         ResponseEntity<String> response = authController.deleteAccountByAdmin(userId);
-
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Testing error", response.getBody());
         verify(userService).deleteUser(userId);
@@ -255,11 +214,8 @@ public class AuthControllerTest {
     void resetPassword_returnsOkWhenPasswordIsResetSuccessfully() {
         String email = "email@example.com";
         String password = "newPassword";
-
         doNothing().when(userService).resetPassword(eq(email), eq(password));
-
         ResponseEntity<?> response = authController.resetPassword(email, password);
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(userService).resetPassword(eq(email), eq(password));
     }
@@ -268,11 +224,8 @@ public class AuthControllerTest {
     void resetPassword_returnsBadRequestWhenExceptionIsThrown() {
         String email = "email@example.com";
         String password = "newPassword";
-
         doThrow(new RuntimeException("Testing error")).when(userService).resetPassword(eq(email), eq(password));
-
         ResponseEntity<?> response = authController.resetPassword(email, password);
-
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Testing error", response.getBody());
         verify(userService).resetPassword(eq(email), eq(password));

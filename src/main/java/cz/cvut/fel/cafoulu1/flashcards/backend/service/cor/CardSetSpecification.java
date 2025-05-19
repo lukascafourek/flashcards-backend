@@ -11,12 +11,12 @@ import java.util.UUID;
  * Specification class for filtering card sets based on various criteria.
  */
 public class CardSetSpecification {
-    public static Specification<CardSet> hasCreator(UUID userId) {
+    static Specification<CardSet> hasCreator(UUID userId) {
         return (root, query, criteriaBuilder) ->
                 userId == null ? criteriaBuilder.conjunction() : criteriaBuilder.equal(root.get("user").get("id"), userId);
     }
 
-    public static Specification<CardSet> isFavorite(UUID userId) {
+    static Specification<CardSet> isFavorite(UUID userId) {
         return (root, query, criteriaBuilder) -> {
             if (userId == null) return criteriaBuilder.conjunction();
             Join<CardSet, User> userJoin = root.join("favoriteUsers");
@@ -24,18 +24,18 @@ public class CardSetSpecification {
         };
     }
 
-    public static Specification<CardSet> hasCategory(String category) {
+    static Specification<CardSet> hasCategory(String category) {
         return (root, query, criteriaBuilder) ->
                 (category == null || category.isEmpty()) ? criteriaBuilder.conjunction() : criteriaBuilder.equal(root.get("category"), category);
     }
 
-    public static Specification<CardSet> containsText(String searchText) {
+    static Specification<CardSet> containsText(String searchText) {
         return (root, query, criteriaBuilder) ->
                 (searchText == null || searchText.isEmpty()) ? criteriaBuilder.conjunction() :
                         criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + searchText.toLowerCase() + "%");
     }
 
-    public static Specification<CardSet> isPublicOrOwnedByUser(UUID userId) {
+    static Specification<CardSet> isPublicOrOwnedByUser(UUID userId) {
         return (root, query, criteriaBuilder) -> {
             if (userId == null) return criteriaBuilder.conjunction();
             return criteriaBuilder.or(

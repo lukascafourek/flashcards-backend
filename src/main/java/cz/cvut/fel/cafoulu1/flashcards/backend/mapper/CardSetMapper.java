@@ -1,6 +1,6 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.mapper;
 
-import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicCardSetDto;
+import cz.cvut.fel.cafoulu1.flashcards.backend.dto.CardSetDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.CardSetRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.FilterCardSetsRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.response.FullCardSetInfo;
@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface CardSetMapper {
     FullCardSetInfo toFullDto(CardSet cardSet);
 
-    BasicCardSetDto toDtoBasic(CardSet cardSet);
+    CardSetDto toDto(CardSet cardSet);
 
     CardSet createCardSet(CardSetRequest cardSetRequest);
 

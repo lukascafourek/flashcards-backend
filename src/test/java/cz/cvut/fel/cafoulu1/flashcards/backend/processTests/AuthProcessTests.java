@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Process tests that verify the full authentication lifecycle
@@ -72,51 +73,40 @@ public class AuthProcessTests {
         registerRequest.setEmail(EMAIL);
         registerRequest.setPassword(PASSWORD);
         registerRequest.setUsername(INITIAL_USERNAME);
-
         var registerResponse = authController.registerUser(registerRequest);
-        assertThat(registerResponse.getStatusCode().is2xxSuccessful()).isTrue();
-
+        assertTrue(registerResponse.getStatusCode().is2xxSuccessful());
         Optional<User> userOpt = userRepository.findByEmail(EMAIL);
         assertThat(userOpt).isPresent();
         User user = userOpt.get();
         userId = user.getId();
         assertThat(user.getUsername()).isEqualTo(INITIAL_USERNAME);
-
         // Login to get token
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setEmail(EMAIL);
         loginRequest.setPassword(PASSWORD);
-
         MockHttpServletResponse loginResponse = new MockHttpServletResponse();
         var loginResult = authController.loginUser(loginRequest, loginResponse);
-        assertThat(loginResult.getStatusCode().is2xxSuccessful()).isTrue();
-
+        assertTrue(loginResult.getStatusCode().is2xxSuccessful());
         String jwtCookie = loginResponse.getHeader("Authorization");
         assertThat(jwtCookie).contains("Bearer ");
-
         String jwtToken = extractTokenFromCookie(jwtCookie);
         assertThat(jwtToken).isNotBlank();
-
         // Update
         UpdateUserRequest updateRequest = new UpdateUserRequest();
         updateRequest.setUsername(UPDATED_USERNAME);
-
         UserDetailsImpl userDetails = UserDetailsImpl.build(user);
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         authentication.setDetails(new WebAuthenticationDetailsSource());
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
         var updateResult = authController.updateUser(updateRequest, authentication);
-        assertThat(updateResult.getStatusCode().is2xxSuccessful()).isTrue();
-
+        assertTrue(updateResult.getStatusCode().is2xxSuccessful());
         Optional<User> updatedUserOpt = userRepository.findByEmail(EMAIL);
         assertThat(updatedUserOpt).isPresent();
         assertThat(updatedUserOpt.get().getUsername()).isEqualTo(UPDATED_USERNAME);
-
         // Logout
         MockHttpServletResponse logoutResponse = new MockHttpServletResponse();
         var logoutResult = authController.logoutUser(logoutResponse);
-        assertThat(logoutResult.getStatusCode().is2xxSuccessful()).isTrue();
+        assertTrue(logoutResult.getStatusCode().is2xxSuccessful());
         List<String> cookies = logoutResponse.getHeaders("Authorization");
         assertThat(cookies).isEmpty();
     }
@@ -128,26 +118,21 @@ public class AuthProcessTests {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setEmail(EMAIL);
         loginRequest.setPassword(PASSWORD);
-
         MockHttpServletResponse loginResponse = new MockHttpServletResponse();
         var loginResult = authController.loginUser(loginRequest, loginResponse);
-        assertThat(loginResult.getStatusCode().is2xxSuccessful()).isTrue();
-
+        assertTrue(loginResult.getStatusCode().is2xxSuccessful());
         Optional<User> userOpt = userRepository.findByEmail(EMAIL);
         assertThat(userOpt).isPresent();
         User user = userOpt.get();
-
         // Set auth context to call authenticated delete
         UserDetailsImpl userDetails = UserDetailsImpl.build(user);
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         authentication.setDetails(new WebAuthenticationDetailsSource());
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
         // Delete
         MockHttpServletResponse deleteResponse = new MockHttpServletResponse();
         var deleteResult = authController.deleteAccount(authentication, deleteResponse);
-        assertThat(deleteResult.getStatusCode().is2xxSuccessful()).isTrue();
-
+        assertTrue(deleteResult.getStatusCode().is2xxSuccessful());
         Optional<User> deletedUser = userRepository.findById(userId);
         assertThat(deletedUser).isEmpty();
     }

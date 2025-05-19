@@ -1,23 +1,20 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.dto;
 
-import cz.cvut.fel.cafoulu1.flashcards.backend.dto.basic.BasicCardSetDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.model.Category;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.UUID;
 
 /**
  * DTO for {@link cz.cvut.fel.cafoulu1.flashcards.backend.model.CardSet}
  */
 @Data
 public class CardSetDto implements Serializable {
-    BasicCardSetDto basicCardSetDto;
-    SetStatisticsDto setStatistics;
-    List<CardDto> cards;
-    Boolean favorite;
-    Boolean creator;
-    Boolean privacy;
-    List<Category> categories;
-    String description;
+    UUID id;
+    String name;
+    Category category;
+    LocalDate creationDate;
+    String creator;
 }

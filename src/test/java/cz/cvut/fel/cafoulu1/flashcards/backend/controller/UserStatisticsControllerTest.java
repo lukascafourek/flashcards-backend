@@ -36,13 +36,10 @@ public class UserStatisticsControllerTest {
     void getUserStatistics_returnsOkWithStatisticsWhenUserIsAuthenticated() {
         UUID userId = UUID.randomUUID();
         UserStatisticsDto statistics = new UserStatisticsDto();
-
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn(userId);
         when(userStatisticsService.getUserStatistics(userId)).thenReturn(statistics);
-
         ResponseEntity<?> response = userStatisticsController.getUserStatistics(authentication);
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(statistics, response.getBody());
     }
@@ -50,13 +47,10 @@ public class UserStatisticsControllerTest {
     @Test
     void getUserStatistics_returnsBadRequestWhenExceptionIsThrown() {
         UUID userId = UUID.randomUUID();
-
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn(userId);
         when(userStatisticsService.getUserStatistics(userId)).thenThrow(new RuntimeException("Testing error"));
-
         ResponseEntity<?> response = userStatisticsController.getUserStatistics(authentication);
-
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Testing error", response.getBody());
     }
