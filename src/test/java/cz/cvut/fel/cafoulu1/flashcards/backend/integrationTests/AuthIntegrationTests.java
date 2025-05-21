@@ -18,8 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Integration tests for core user authentication and account management functionality.
@@ -78,9 +77,9 @@ public class AuthIntegrationTests {
         request.setUsername(USERNAME);
         userService.registerUser(request);
         Optional<User> userOpt = userRepository.findByEmail(EMAIL);
-        assertThat(userOpt).isPresent();
+        assertTrue(userOpt.isPresent());
         User user = userOpt.get();
-        assertThat(user.getUsername()).isEqualTo(USERNAME);
+        assertEquals(USERNAME, user.getUsername());
         userId = user.getId();
     }
 
@@ -88,10 +87,10 @@ public class AuthIntegrationTests {
     @Order(2)
     public void loginUser_shouldReturnUserDetails() {
         UserDetails userDetails = userDetailsService.loadUserByUsername(EMAIL);
-        assertThat(userDetails).isNotNull();
-        assertThat(userDetails.getUsername()).isEqualTo(EMAIL);
+        assertNotNull(userDetails);
+        assertEquals(EMAIL, userDetails.getUsername());
         assertTrue(passwordEncoder.matches(PASSWORD, userDetails.getPassword()));
-        assertThat(userDetails.getAuthorities()).isNotEmpty();
+        assertFalse(userDetails.getAuthorities().isEmpty());
     }
 
     @Test
@@ -101,8 +100,8 @@ public class AuthIntegrationTests {
         updateRequest.setUsername(UPDATED_USERNAME);
         userService.updateUser(EMAIL, updateRequest);
         Optional<User> userOpt = userRepository.findByEmail(EMAIL);
-        assertThat(userOpt).isPresent();
-        assertThat(userOpt.get().getUsername()).isEqualTo(UPDATED_USERNAME);
+        assertTrue(userOpt.isPresent());
+        assertEquals(UPDATED_USERNAME, userOpt.get().getUsername());
     }
 
     @Test
@@ -110,6 +109,6 @@ public class AuthIntegrationTests {
     public void deleteUser_shouldRemoveUserFromRepository() {
         userService.deleteUser(userId);
         Optional<User> userOpt = userRepository.findById(userId);
-        assertThat(userOpt).isEmpty();
+        assertFalse(userOpt.isPresent());
     }
 }
