@@ -1,7 +1,7 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.service;
 
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.CardDto;
-import cz.cvut.fel.cafoulu1.flashcards.backend.dto.response.CarsSetResponse;
+import cz.cvut.fel.cafoulu1.flashcards.backend.dto.response.CardSetResponse;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.CardSetRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.FilterCardSetsRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.response.FullCardInfo;
@@ -59,7 +59,7 @@ public interface CardSetService {
      * @param userId    the ID of the user requesting the card sets
      * @return the details of the card set
      */
-    CarsSetResponse getCardSet(UUID cardSetId, UUID userId);
+    CardSetResponse getCardSet(UUID cardSetId, UUID userId);
 
     /**
      * Gets a paginated list of card sets.

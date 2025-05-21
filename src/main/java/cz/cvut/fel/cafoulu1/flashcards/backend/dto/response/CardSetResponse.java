@@ -11,7 +11,7 @@ import java.util.List;
  * Response object for getting a card set.
  */
 @Data
-public class CarsSetResponse implements Serializable {
+public class CardSetResponse implements Serializable {
     CardSetDto cardSetDto;
     Boolean favorite;
     Boolean creator;

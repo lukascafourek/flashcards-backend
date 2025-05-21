@@ -1,7 +1,7 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.controller;
 
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.CardDto;
-import cz.cvut.fel.cafoulu1.flashcards.backend.dto.response.CarsSetResponse;
+import cz.cvut.fel.cafoulu1.flashcards.backend.dto.response.CardSetResponse;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.CardSetRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.FilterCardSetsRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.response.CardSetsResponse;
@@ -181,7 +181,7 @@ public class CardSetControllerTest {
     void getCardSet_returnsOkWhenCardSetIsRetrievedSuccessfully() {
         UUID cardSetId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
-        CarsSetResponse cardSet = new CarsSetResponse();
+        CardSetResponse cardSet = new CardSetResponse();
         when(authentication.getPrincipal()).thenReturn(userDetails);
         when(userDetails.getId()).thenReturn(userId);
         when(cardSetService.getCardSet(cardSetId, userId)).thenReturn(cardSet);

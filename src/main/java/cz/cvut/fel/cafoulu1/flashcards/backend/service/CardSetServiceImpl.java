@@ -1,7 +1,7 @@
 package cz.cvut.fel.cafoulu1.flashcards.backend.service;
 
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.CardDto;
-import cz.cvut.fel.cafoulu1.flashcards.backend.dto.response.CarsSetResponse;
+import cz.cvut.fel.cafoulu1.flashcards.backend.dto.response.CardSetResponse;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.CardSetDto;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.CardRequest;
 import cz.cvut.fel.cafoulu1.flashcards.backend.dto.request.CardSetRequest;
@@ -144,7 +144,7 @@ public class CardSetServiceImpl implements CardSetService {
 
     @Transactional
     @Override
-    public CarsSetResponse getCardSet(UUID cardSetId, UUID userId) {
+    public CardSetResponse getCardSet(UUID cardSetId, UUID userId) {
         CardSet cardSet = cardSetRepository.findById(cardSetId)
                 .orElseThrow(() -> new IllegalArgumentException("Card set not found"));
         if (cardSet.getPrivacy() && !cardSet.getUser().getId().equals(userId)) {
@@ -152,7 +152,7 @@ public class CardSetServiceImpl implements CardSetService {
         }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        CarsSetResponse response = new CarsSetResponse();
+        CardSetResponse response = new CardSetResponse();
         CardSetDto cardSetDto = cardSetMapper.toDto(cardSet);
         cardSetDto.setCreator(cardSet.getUser().getUsername());
         response.setCardSetDto(cardSetDto);
