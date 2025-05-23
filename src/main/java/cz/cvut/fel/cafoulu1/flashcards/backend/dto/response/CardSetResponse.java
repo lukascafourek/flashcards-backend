@@ -15,7 +15,5 @@ public class CardSetResponse implements Serializable {
     CardSetDto cardSetDto;
     Boolean favorite;
     Boolean creator;
-    Boolean privacy;
     List<Category> categories;
-    String description;
 }

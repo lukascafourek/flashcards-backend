@@ -158,9 +158,7 @@ public class CardSetServiceImpl implements CardSetService {
         response.setCardSetDto(cardSetDto);
         response.setFavorite(cardSet.getFavoriteUsers().contains(user));
         response.setCreator(cardSet.getUser().getId().equals(userId));
-        response.setPrivacy(cardSet.getPrivacy());
         response.setCategories(List.of(Category.values()));
-        response.setDescription(cardSet.getDescription());
         return response;
     }
 

@@ -14,7 +14,9 @@ import java.util.UUID;
 public class CardSetDto implements Serializable {
     UUID id;
     String name;
+    String description;
     Category category;
     LocalDate creationDate;
+    Boolean privacy;
     String creator;
 }
