@@ -1,3 +1,7 @@
+# ARCHIVE REPOSITORY
+
+**THE APP IS NO LONGER AVAILABLE**.
+
 # Flashcards Backend
 
 This is the **backend part of the Flash cards web application**, which is part of my bachelor's thesis at the Czech Technical University in Prague (CTU). The backend is developed using **Java Spring Boot** and serves as the API for the frontend application, handling user management, authentication, authorization, and CRUD operations for the project.
